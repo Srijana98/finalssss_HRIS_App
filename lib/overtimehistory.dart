@@ -9,7 +9,7 @@ import 'config.dart';
 
 
 class OvertimeRequest {
-  final String masterId;
+   final String id;
   final String startDate;
   final String endDate;
   final String startTime;
@@ -17,7 +17,7 @@ class OvertimeRequest {
   final String remarks;
 
   OvertimeRequest({
-    required this.masterId,
+    required this.id,
     required this.startDate,
     required this.endDate,
     required this.startTime,
@@ -25,23 +25,20 @@ class OvertimeRequest {
     required this.remarks,
   });
 
-  /// ✅ Safely convert API response (with possible List or String values)
   factory OvertimeRequest.fromJson(Map<String, dynamic> json) {
   return OvertimeRequest(
-    masterId: json['master_id']?.toString() ?? '', // ✅ new
-    startDate: json['ot_datead']?.toString() ?? '', // API field
-    endDate: json['ot_datebs']?.toString() ?? '',   // API field
+    id: json['id']?.toString() ?? '',
+    startDate: json['ot_datead']?.toString() ?? '', 
+    endDate: json['ot_datebs']?.toString() ?? '',   
     startTime: json['ot_starttime']?.toString() ?? '',
     endTime: json['ot_endtime']?.toString() ?? '',
     remarks: json['remarks']?.toString().trim() ?? '',
   );
 }
 
-
-  /// ✅ Convert Dart object → JSON (for API submission)
   Map<String, dynamic> toJson() {
   return {
-    "master_id": masterId,
+    "id": id,
     "ot_datead": startDate,
     "ot_datebs": endDate,
     "ot_starttime": startTime,
@@ -145,13 +142,7 @@ class _OverTimeHistoryPageState extends State<OverTimeHistoryPage> {
         if (data['status'] == 'success') {
           parseHistoryData(data);
           print("History API Response: ${jsonEncode(data)}");
-
-
-        
-
-          
-
-        } else {
+            } else {
           setState(() {
             _error = data['message'] ?? 'No data available';
           });
@@ -181,6 +172,79 @@ class _OverTimeHistoryPageState extends State<OverTimeHistoryPage> {
       return time;
     }
   }
+
+  Future<void> cancelOvertimeRequest(int id, int index) async {
+    try {
+    final prefs = await SharedPreferences.getInstance();
+    final empId = prefs.getString('employee_id') ?? '';
+    final orgId = prefs.getString('org_id') ?? '';
+    final locationId = prefs.getString('location_id') ?? '';
+    final token = prefs.getString('token') ?? '';
+
+    final url = Uri.parse('$baseUrl/api/v1/overtime_cancel_record');
+
+    print('🔹 Cancel Request URL: $url');
+    print('🔹 Request Headers: {empid: $empId, orgid: $orgId, locationid: $locationId}');
+    print('🔹 Request Body: ${jsonEncode({'id': id})}');
+
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+        'empid': empId,
+        'orgid': orgId,
+        'locationid': locationId,
+      },
+      body: jsonEncode({'id': id}),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == 'success') {
+        setState(() {
+          historyData['Pending']?.removeAt(index);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Record canceled successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+ 
+       fetchOvertimeHistory();
+();
+
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data['message'] ?? 'Failed to cancel request'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Server error: ${response.statusCode}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
+
 
   Widget _buildList(String tab) {
     List<OvertimeRequest> records = historyData[tab] ?? [];
@@ -223,19 +287,6 @@ class _OverTimeHistoryPageState extends State<OverTimeHistoryPage> {
                       style: const TextStyle(
                         fontSize: 14,
                         color: Colors.black87,
-                      ),
-                    ),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green.shade100,
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        'Overtime',
-                        style: TextStyle(
-                            fontSize: 13, fontWeight: FontWeight.bold),
                       ),
                     ),
                   ],
@@ -326,19 +377,22 @@ class _OverTimeHistoryPageState extends State<OverTimeHistoryPage> {
                                               BorderRadius.circular(8),
                                         ),
                                       ),
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                        setState(() {
-                                          historyData['Pending']
-                                              ?.removeAt(index);
-                                        });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(const SnackBar(
-                                          content: Text(
-                                              'Record canceled successfully'),
-                                          backgroundColor: Colors.red,
-                                        ));
-                                      },
+                                      
+                                      onPressed: () async {
+                                        Navigator.pop(context); // close popup first
+              
+              if (request.id != null) {
+               await cancelOvertimeRequest(int.parse(request.id), index);
+
+              } else {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Missing record ID'),
+                    backgroundColor: Colors.red,
+                  ),
+                );
+              }
+            },
                                       child: const Text("OK",
                                           style: TextStyle(
                                               color: Colors.white)),

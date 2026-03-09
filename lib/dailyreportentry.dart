@@ -120,7 +120,7 @@ class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
           ),
         ),
       ),
-      // ✅ AD/BS toggle button (replacing calendar icon)
+    
       Positioned(
         right: 6,
         top: 6,

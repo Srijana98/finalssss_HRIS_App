@@ -20,7 +20,7 @@ class WorkOnHolidayHistoryModel {
   final String? fromDateAd;
   final String? toDateAd;
   final String? attachment;
-  final String? dateType; // 'NP' or 'EN'
+  final String? dateType; 
   final String? holidayId;
   
 
@@ -33,7 +33,7 @@ class WorkOnHolidayHistoryModel {
     this.fromDateAd,
     this.toDateAd,
     this.attachment,
-    this.dateType, // add this
+    this.dateType, 
     this.holidayId, 
    
   });
@@ -296,7 +296,7 @@ Future<void> _selectDate(bool isFrom) async {
   String _formatDate(DateTime? date) {
     return date != null ? DateFormat('yyyy/MM/dd').format(date) : '';
   }
-///Widget buildCardItem(Map<String, dynamic> item, String tab, int index) {
+
   Widget buildCardItem(WorkOnHolidayHistoryModel item, String tab, int index) {
 
   return Card(
@@ -323,8 +323,8 @@ Row(
     Expanded(child: Text('Purpose: ${item.purpose ?? 'N/A'}')),
     OutlinedButton.icon(
   style: OutlinedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), // smaller
-    minimumSize: const Size(60, 28), // make the button smaller
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), 
+    minimumSize: const Size(60, 28), 
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),
@@ -357,7 +357,7 @@ Builder(
     String fromDate = item.fromDateBs ?? '';
     String toDate = item.toDateBs ?? '';
 
-    // Try to calculate number of days
+  
     int daysCount = 0;
     try {
       if (fromDate.isNotEmpty && toDate.isNotEmpty) {
@@ -366,7 +366,6 @@ Builder(
         daysCount = end.difference(start).inDays + 1;
       }
     } catch (e) {
-      // just ignore parse errors
     }
 
     return Text(
@@ -395,13 +394,11 @@ Builder(
                       ),
                     ),
                     onPressed: () async {
-                      // Navigate to update form
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (_) => WorkonHolidayEntryPage(
                             existingData: item.toJson(),
-                            // if your WorkFromHomeEntryPage supports editing, pass item
                           ),
                         ),
                       );

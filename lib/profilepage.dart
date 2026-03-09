@@ -133,7 +133,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 const SizedBox(height: 12),
                                 const Text(
-                                  "USER PROFILE",
+                                  "PROFILE",
                                   style: TextStyle(
                                     color: Colors.lightBlue,
                                     fontSize: 14,
@@ -142,7 +142,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 const SizedBox(height: 20),
 
-                                /// Replace empty fields with real data
                                 buildInfoRow("Username", profileData!['empcode'] ?? ''),
                                 buildInfoRow("Email", profileData!['email'] ?? ''),
                                 buildInfoRow("Full Name", profileData!['full_name'] ?? ''),
@@ -188,4 +187,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 } 
+
+
 

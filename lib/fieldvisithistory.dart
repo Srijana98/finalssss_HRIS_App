@@ -176,7 +176,7 @@ class _FieldVisitHistoryPageState extends State<FieldVisitHistoryPage> {
       if (jsonResponse['status'] == 'success' && jsonResponse['data']?['record'] != null) {
         final record = Map<String, dynamic>.from(jsonResponse['data']['record']);
 
-        // Fix key mapping for entry page
+       
         record['from_date'] = record['from_datead'];
         record['to_date'] = record['to_datead'];
         record['mode_of_transportation'] = record['travel_vehicle'] ?? record['mode_of_transportation'];

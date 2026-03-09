@@ -20,7 +20,7 @@ class WorkOnWeekendHistoryModel {
   final String? fromDateAd;
   final String? toDateAd;
   final String? attachment;
-  final String? dateType; // 'NP' or 'EN'
+  final String? dateType; 
   
 
  WorkOnWeekendHistoryModel({
@@ -32,7 +32,7 @@ class WorkOnWeekendHistoryModel {
     this.fromDateAd,
     this.toDateAd,
     this.attachment,
-    this.dateType, // add this
+    this.dateType, 
    
   });
 
@@ -46,7 +46,7 @@ class WorkOnWeekendHistoryModel {
       fromDateAd: json['from_datead'],
       toDateAd: json['to_datead'],
       attachment: json['attachment'], 
-      dateType: json['date_type'], // add this
+      dateType: json['date_type'], 
       
     );
   }
@@ -61,7 +61,7 @@ class WorkOnWeekendHistoryModel {
       'from_datead': fromDateAd,
       'to_datead': toDateAd,
       'attachment': attachment,
-      'date_type': dateType, // add this
+      'date_type': dateType, 
     };
   }
 }
@@ -255,11 +255,6 @@ Future<void> cancelWorkOnWeekendRequest(String id, int index) async {
   }
 }
 
-
-
-
-
-
 Future<void> _selectDate(bool isFrom) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -313,12 +308,10 @@ Row(
   children: [
     Expanded(child: Text('Purpose: ${item.purpose ?? 'N/A'}')),
 
-
-
 OutlinedButton.icon(
   style: OutlinedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), // smaller
-    minimumSize: const Size(60, 28), // make the button smaller
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), 
+    minimumSize: const Size(60, 28), 
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
     ),

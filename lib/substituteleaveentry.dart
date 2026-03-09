@@ -9,6 +9,9 @@ import 'config.dart';
 import 'substituteleavehistory.dart';
 
 class SubstituteLeavePage extends StatefulWidget {
+
+  final Map<String, dynamic>? existingLeaveData;
+  const SubstituteLeavePage({Key? key, this.existingLeaveData}) : super(key: key);
   @override
   _SubstituteLeavePageState createState() => _SubstituteLeavePageState();
 }
@@ -23,14 +26,159 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
   String? orgId;
   String? locationId;
   bool _isLoading = false;
+  String? leaveId;
+
+
   int get totalDays => leaveEntries.length;
+
 
   @override
   void initState() {
-    super.initState();
-    _loadUserData();
-  }
+  super.initState();
+  _loadUserData();
+  _prefillDataIfExists(); 
+}
 
+
+
+void _prefillDataIfExists() {
+  if (widget.existingLeaveData != null) {
+    final data = widget.existingLeaveData!;
+
+    print("====== PREFILL DATA DEBUG ======");
+    print("Full data: ${jsonEncode(data)}");
+
+   
+   leaveId = data['leave_assign_masterid']?.toString();
+
+    print("Leave ID for update: $leaveId");
+    
+    
+    if (data['remarks'] != null && data['remarks'].toString().isNotEmpty) {
+      remarksController.text = data['remarks'];
+    }
+    
+    leaveEntries.clear();
+    
+    final List<dynamic> substitutes = data['substitutes'] as List<dynamic>? ?? [];
+    print("Number of substitutes: ${substitutes.length}");
+    
+    
+    for (var substitute in substitutes) {
+      LeaveEntry entry = LeaveEntry();
+
+      print("====== PROCESSING SUBSTITUTE ======");
+      print("Full substitute data: ${jsonEncode(substitute)}");
+      
+      
+      // Parse duty date (substitute_datebs)
+      if (substitute['substitute_datebs'] != null) {
+        try {
+          String dateStr = substitute['substitute_datebs'].toString();
+          print("Parsing duty date: $dateStr"); 
+          List<String> parts = dateStr.split('/');
+          if (parts.length == 3) {
+            entry.dutyDate = NepaliDateTime(
+              int.parse(parts[0]), 
+              int.parse(parts[1]), 
+              int.parse(parts[2])
+            );
+            entry.dutyIsBS = true;
+            print("✅ Duty date set: ${entry.dutyDate}");
+          }
+        } catch (e) {
+          print("❌ Error parsing duty date: $e");
+        }
+      }
+      
+      
+      if (substitute['is_half'] != null) {
+        entry.isHalfDuty = substitute['is_half'].toString().toUpperCase() == 'Y';
+        print("Half duty status: ${entry.isHalfDuty}");
+      }
+      
+      
+      if (substitute['substitute_remarks'] != null && 
+          substitute['substitute_remarks'].toString().isNotEmpty) {
+        entry.remarksController.text = substitute['substitute_remarks'];
+        print("Remarks set: ${entry.remarksController.text}");
+      }
+      
+      
+      String? leaveDateStr;
+      
+      
+      if (substitute['taken'] != null && 
+          substitute['taken'].toString().trim().toUpperCase() == 'Y') {
+        leaveDateStr = substitute['taken_datebs']?.toString();
+        print("Using taken_datebs (taken=Y): $leaveDateStr");
+      }
+      
+      
+      if (leaveDateStr == null || leaveDateStr.isEmpty || leaveDateStr == 'null') {
+        leaveDateStr = substitute['leave_datebs']?.toString();
+        print("Using leave_datebs: $leaveDateStr");
+      }
+      
+      
+      if (leaveDateStr == null || leaveDateStr.isEmpty || leaveDateStr == 'null') {
+        leaveDateStr = substitute['leave_date']?.toString();
+        print("Using leave_date: $leaveDateStr");
+      }
+      
+      
+      if (leaveDateStr != null && 
+          leaveDateStr.isNotEmpty && 
+          leaveDateStr != 'null') {
+        try {
+          String dateStr = leaveDateStr.trim();
+          print("Attempting to parse leave date: '$dateStr'");
+          
+          List<String> parts = dateStr.split('/');
+          print("Date parts: $parts (length: ${parts.length})");
+          
+          if (parts.length == 3) {
+            int year = int.parse(parts[0].trim());
+            int month = int.parse(parts[1].trim());
+            int day = int.parse(parts[2].trim());
+            
+            print("Parsed values - Year: $year, Month: $month, Day: $day");
+            
+            entry.leaveDate = NepaliDateTime(year, month, day);
+            entry.leaveIsBS = true;
+            entry.isApplyLeave = true; 
+            
+            print("✅✅✅ Leave date SET SUCCESSFULLY: ${entry.leaveDate}");
+            print("Leave date formatted: ${NepaliDateFormat('yyyy/MM/dd').format(entry.leaveDate)}");
+          } else {
+            print("❌ Invalid date format - expected 3 parts, got ${parts.length}");
+          }
+        } catch (e) {
+          print("❌❌❌ Error parsing leave date: $e");
+        }
+      } else {
+        print("No leave date found in any field");
+        entry.isApplyLeave = false;
+      }
+      
+      print("====== FINAL ENTRY STATE ======");
+      print("Duty Date: ${entry.dutyDate}");
+      print("Leave Date: ${entry.leaveDate}");
+      print("isApplyLeave: ${entry.isApplyLeave}");
+      print("isHalfDuty: ${entry.isHalfDuty}");
+     
+      
+      leaveEntries.add(entry);
+    }
+    
+    
+    if (leaveEntries.isEmpty) {
+      leaveEntries.add(LeaveEntry());
+    }
+    
+    setState(() {});
+  }
+}
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -73,7 +221,6 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
         setState(() {
           if (isDutyDate) {
             entry.dutyDate = picked;
-            // Call APIs when duty date is selected
             _checkDutyDateAPIs(entry, picked, isBS);
           } else {
             entry.leaveDate = picked;
@@ -91,7 +238,6 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
         setState(() {
           if (isDutyDate) {
             entry.dutyDate = picked;
-            // Call APIs when duty date is selected
             _checkDutyDateAPIs(entry, picked, isBS);
           } else {
             entry.leaveDate = picked;
@@ -117,7 +263,6 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
     });
 
     try {
-      // Format date based on calendar type
       String dateVal;
       String dateType = isBS ? 'NP' : 'EN';
       
@@ -129,29 +274,27 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
         dateVal = DateFormat('yyyy/MM/dd').format(englishDate);
       }
 
-      print("====== API CALL PARAMETERS ======");
+     
       print("empid: $empId");
       print("orgid: $orgId");
       print("date_type: $dateType");
       print("date_val: $dateVal");
      
 
-      // Call all three APIs and collect responses
+ 
       List<String> responses = [];
       
-      // Check Attendance
+     
       String attendanceMsg = await _checkAttendance(dateVal, dateType);
       responses.add(attendanceMsg);
       
-      // Check Rejection
+
       String rejectionMsg = await _checkRejection(dateVal, dateType);
       responses.add(rejectionMsg);
-      
-      // Check Overtime
+ 
       String overtimeMsg = await _checkOvertime(dateVal, dateType);
       responses.add(overtimeMsg);
 
-      // Combine all responses
       setState(() {
         entry.apiResponseMessage = responses.join('\n');
         entry.hasError = false;
@@ -201,6 +344,9 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
       return "✗ Attendance: Error - $e";
     }
   }
+
+
+  
 
   Future<String> _checkRejection(String dateVal, String dateType) async {
     try {
@@ -270,11 +416,8 @@ class _SubstituteLeavePageState extends State<SubstituteLeavePage> {
     }
   }
 
-
-
-
 Future<void> _saveSubstituteLeave() async {
-  // Validation
+
   if (empId == null || orgId == null || locationId == null) {
     _showMessage("User data not found. Please login again.", isError: true);
     return;
@@ -285,7 +428,7 @@ Future<void> _saveSubstituteLeave() async {
     return;
   }
 
-  // Check if all entries have duty dates
+
   for (int i = 0; i < leaveEntries.length; i++) {
     if (leaveEntries[i].dutyDate == null) {
       _showMessage("Please select duty date for Entry ${i + 1}", isError: true);
@@ -296,7 +439,7 @@ Future<void> _saveSubstituteLeave() async {
   setState(() => _isLoading = true);
 
   try {
-    // Prepare arrays for the request body
+    
     List<String> subDates = [];
     List<int> detailIds = [];
     List<String> attendStatuses = [];
@@ -305,12 +448,14 @@ Future<void> _saveSubstituteLeave() async {
     List<String> isHalfs = [];
     List<dynamic> leaveDates = [];  
     List<String> employeeRemarks = [];
+  
 
-    // Get today's date for sdate
+    
+
+   
     String sdate = DateFormat('yyyy/MM/dd').format(DateTime.now());
 
     for (var entry in leaveEntries) {
-      // Format duty date (sub_date)
       String formattedDutyDate;
       if (entry.dutyIsBS) {
         NepaliDateTime nepaliDate = entry.dutyDate is NepaliDateTime 
@@ -325,8 +470,8 @@ Future<void> _saveSubstituteLeave() async {
       }
       subDates.add(formattedDutyDate);
 
-      // Format leave date if exists
-      dynamic formattedLeaveDate;  // ✅ CHANGED from String? to dynamic
+
+      dynamic formattedLeaveDate; 
       if (entry.leaveDate != null) {
         if (entry.leaveIsBS) {
           NepaliDateTime nepaliDate = entry.leaveDate is NepaliDateTime 
@@ -340,7 +485,7 @@ Future<void> _saveSubstituteLeave() async {
           formattedLeaveDate = DateFormat('yyyy/MM/dd').format(englishDate);
         }
       } else {
-        formattedLeaveDate = null;  // ✅ Keep as null instead of empty string
+        formattedLeaveDate = null;  
       }
       leaveDates.add(formattedLeaveDate);
 
@@ -359,7 +504,7 @@ Future<void> _saveSubstituteLeave() async {
     final requestBody = {
       "sdate": sdate,
       "tdays": totalDays,
-      "master_id": null,
+       "id": leaveId,
       "sub_date": subDates,
       "detailid": detailIds,
       "attendStatus": attendStatuses,
@@ -403,7 +548,6 @@ Future<void> _saveSubstituteLeave() async {
 if (response.statusCode == 200) {
   final data = jsonDecode(response.body);
   if (data['status'] == 'success') {
-    // Handle success message (can be String or List)
     String successMessage;
     if (data['message'] is List) {
       successMessage = (data['message'] as List).join('\n');
@@ -421,17 +565,13 @@ if (response.statusCode == 200) {
       );
    
   } else {
-    // ✅ IMPROVED ERROR HANDLING - Handle both String and List
     String errorMessage;
     if (data['message'] is List) {
-      // If message is a list, join all messages with newlines
       errorMessage = (data['message'] as List).join('\n');
     } else if (data['message'] is String) {
-      // If message is a string, use it directly
       errorMessage = data['message'];
     } else {
-      // Fallback error message
-      errorMessage = "Failed to save substitute leave";
+     errorMessage = "Failed to save substitute leave";
     }
     print("Error details: $data");
     _showMessage(errorMessage, isError: true);
@@ -634,7 +774,7 @@ if (response.statusCode == 200) {
             },
           ),
           
-          // Show API response message in a single container
+         
           if (item.apiResponseMessage != null)
             Container(
               margin: const EdgeInsets.only(top: 8),
@@ -979,7 +1119,7 @@ Center(
       ),
       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
     ),
-    onPressed: _saveSubstituteLeave,  // ✅ CHANGED THIS LINE
+    onPressed: _saveSubstituteLeave,
   ),
 ),
 const SizedBox(height: 20),

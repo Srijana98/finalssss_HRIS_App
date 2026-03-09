@@ -308,7 +308,6 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
   }
 
   Widget _buildHolidayDropdown() {
-    // Debug widget state
     print('🎨 Building dropdown - _selectedHoliday: ${_selectedHoliday?.eventname ?? "NULL"}');
     print('🎨 Holidays count: ${_holidays.length}');
     
@@ -455,7 +454,7 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
       print('🧩 Headers: ${request.headers}');
       print('📦 Fields: ${request.fields}');
       print('📎 Files: ${_attachments.map((f) => f.name).toList()}');
-      print('===========================');
+     
 
       var response = await request.send();
       var responseBody = await response.stream.bytesToString();
@@ -464,7 +463,7 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
       print('✅ ====== API RESPONSE ======');
       print('🔢 Status Code: ${response.statusCode}');
       print('💬 Response Body: $responseBody');
-      print('=============================');
+     
 
       if (response.statusCode == 200 && result['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -558,7 +557,7 @@ class Holiday {
 
   factory Holiday.fromJson(Map<String, dynamic> json) {
     return Holiday(
-      id: json['id'].toString(), // ✅ Convert to string to handle both int and string
+      id: json['id'].toString(), 
       eventname: json['eventname'],
       startDateBS: json['start_datebs'],
       endDateBS: json['end_datebs'],

@@ -21,12 +21,31 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
- final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
   bool _isLoading = false;
+  bool _rememberMe = false;
 
+  @override
+  void initState() {
+    super.initState();
+    _loadRememberedCredentials();
+  }
 
+  // ✅ Load saved credentials if "Remember Me" was checked
+  Future<void> _loadRememberedCredentials() async {
+    final prefs = await SharedPreferences.getInstance();
+    final rememberMe = prefs.getBool('rememberMe') ?? false;
+    
+    if (rememberMe) {
+      setState(() {
+        _rememberMe = true;
+        _emailController.text = prefs.getString('savedEmail') ?? '';
+        _passwordController.text = prefs.getString('savedPassword') ?? '';
+      });
+    }
+  }
 
 Future<void> _login() async {
   final email = _emailController.text.trim();
@@ -55,35 +74,56 @@ Future<void> _login() async {
     final data = jsonDecode(response.body);
 
     if (data["status"] == "success") {
+      // ✅ CHECK IF EMPLOYEE DATA EXISTS
+      if (data["employee_data"] == null) {
+        _showMessage("No valid employee found.", isError: true);
+        setState(() => _isLoading = false);
+        return;
+      }
+
       final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      // ✅ Save "Remember Me" credentials
+      await prefs.setBool('rememberMe', _rememberMe);
+      if (_rememberMe) {
+        await prefs.setString('savedEmail', email);
+        await prefs.setString('savedPassword', password);
+      } else {
+        await prefs.remove('savedEmail');
+        await prefs.remove('savedPassword');
+      }
 
       final token = data["token"];
       final user = data["employee_data"];
+      
+      // ✅ ADDITIONAL CHECK: Verify essential fields exist
       final empId = (user["id"] ?? user["employee_id"])?.toString() ?? '';
       final orgId = (user["orgid"] ?? user["org_id"])?.toString() ?? '';
       final locationId = (user["locationid"] ?? user["location_id"])?.toString() ?? '';
 
-// ✅ Debug print to confirm values are correctly fetched
-print("====== DEBUG LOGIN STORED VALUES ======");
-print("employee_id: $empId");
-print("org_id: $orgId");
-print("locationid: $locationId");
-print("=======================================");
+      if (empId.isEmpty || orgId.isEmpty) {
+        _showMessage("No valid employee found.", isError: true);
+        setState(() => _isLoading = false);
+        return;
+      }
 
-// ✅ Save to SharedPreferences
-await prefs.setString('employee_id', empId);
-await prefs.setString('org_id', orgId);
-await prefs.setString('location_id', locationId);
+      // ✅ Debug print to confirm values are correctly fetched
+      print("====== DEBUG LOGIN STORED VALUES ======");
+      print("employee_id: $empId");
+      print("org_id: $orgId");
+      print("locationid: $locationId");
+      print("=======================================");
 
-    
+      // ✅ Save to SharedPreferences
+      await prefs.setString('employee_id', empId);
+      await prefs.setString('org_id', orgId);
+      await prefs.setString('location_id', locationId);
 
       // ✅ Store full user profile info
       await prefs.setString('name', user["full_name"] ?? '');
       await prefs.setString('designation', user["designation_name"] ?? '');
       await prefs.setString('serviceDuration', user["service_duration"] ?? '');
       await prefs.setString('branch', user["location_name"] ?? '');
-     // await prefs.setString('photoUrl', user["image_url"] ?? '');
-
       await prefs.setString('photo', user["image_url"] ?? '');
 
       _showMessage("Login successful!");
@@ -102,11 +142,6 @@ await prefs.setString('location_id', locationId);
     setState(() => _isLoading = false);
   }
 }
-
-
-
-
-
 
   Future<bool> _checkInternetConnection() async {
     try {
@@ -162,30 +197,34 @@ await prefs.setString('location_id', locationId);
                         child: Column(
                           children: [
                             SizedBox(height: constraints.maxHeight * 0.04),
-                            CircleAvatar(
-                              radius: 70,
-                              backgroundColor: Colors.white,
-                              child: ClipRRect(
-                                borderRadius: BorderRadius.circular(70),
-                                child: Image.asset(
-                                  'assets/xelwel logo.png',
-                                  width: 110,
-                                  height: 110,
-                                  fit: BoxFit.cover,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 24),
-                            const Text(
-                              'Log In',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF346CB0),
-                              ),
-                            ),
                           
-                            const SizedBox(height: 30),
+
+                             ClipOval(
+  child: Container(
+    width: 150,   
+    height: 100,  
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.15),
+          blurRadius: 10,
+          spreadRadius: 3,
+        ),
+      ],
+    ),
+    child: Padding(
+      padding: const EdgeInsets.all(12.0),
+      child: Image.asset(
+        'assets/xelwel logo1.png',
+        fit: BoxFit.contain,
+      ),
+    ),
+  ),
+),                   
+
+                            const SizedBox(height: 24),
+                           const SizedBox(height: 50),
                             Container(
                               padding: const EdgeInsets.all(20),
                               decoration: BoxDecoration(
@@ -224,7 +263,7 @@ await prefs.setString('location_id', locationId);
                                       suffixIcon: IconButton(
                                         icon: Icon(
                                           _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
-                                          color: Colors.grey,
+                                          color: Color(0xFF346CB0),
                                         ),
                                         onPressed: () {
                                           setState(() {
@@ -241,6 +280,47 @@ await prefs.setString('location_id', locationId);
                                       ),
                                     ),
                                   ),
+                                  const SizedBox(height: 25),
+                                  
+                                  // ✅ REMEMBER ME CHECKBOX
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        height: 24,
+                                        width: 24,
+                                        child: Checkbox(
+                                          value: _rememberMe,
+                                          onChanged: (value) {
+                                            setState(() {
+                                              _rememberMe = value ?? false;
+                                            });
+                                          },
+                                          activeColor: const Color(0xFF346CB0),
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      GestureDetector(
+                                        onTap: () {
+                                          setState(() {
+                                            _rememberMe = !_rememberMe;
+                                          });
+                                        },
+                                        child: const Text(
+                                          'Remember me?',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            color: Colors.black87,
+                                            fontWeight: FontWeight.w600,
+                                            decoration: TextDecoration.underline,
+                                            decorationThickness: 1.5,
+                                            height: 1.3,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  
                                   Align(
                                     alignment: Alignment.centerRight,
                                     child: TextButton(
@@ -262,13 +342,13 @@ await prefs.setString('location_id', locationId);
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                      minimumSize: const Size(150, 35),
+                                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+                                      minimumSize: const Size(140, 30),
                                     ),
                                     child: _isLoading
                                         ? const CircularProgressIndicator(color: Colors.white)
                                         : const Text(
-                                            'Log In',
+                                            'Submit',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 15,
@@ -284,8 +364,8 @@ await prefs.setString('location_id', locationId);
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                                      minimumSize: const Size(150, 35),
+                                      padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 6),
+                                      minimumSize: const Size(140, 30),
                                     ),
                                     child: const Text(
                                       'Submit Attendance',
@@ -315,24 +395,30 @@ await prefs.setString('location_id', locationId);
   }
 }
 
+
 class CurvedPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-    Paint paint = Paint()
+    final paint = Paint()
       ..color = const Color(0xFF346CB0)
       ..style = PaintingStyle.fill;
 
-    Path path = Path();
-    path.lineTo(0, size.height - 40);
-    path.quadraticBezierTo(size.width * 0.5, size.height, size.width, size.height - 40);
-    path.lineTo(size.width, 0);
-    path.close();
+    final path = Path()
+      ..lineTo(0, size.height * 0.75)
+      ..quadraticBezierTo(
+        size.width / 2,
+        size.height,
+        size.width,
+        size.height * 0.75,
+      )
+      ..lineTo(size.width, 0)
+      ..close();
 
     canvas.drawPath(path, paint);
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 

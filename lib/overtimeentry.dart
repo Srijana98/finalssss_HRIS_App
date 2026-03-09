@@ -84,10 +84,10 @@ class _OvertimeEntryPageState extends State<OvertimeEntryPage> {
   // Track BS / AD selection
   bool _startIsBS = true;
   bool _endIsBS = true;
-  int? _masterId;
+  int? _id;
 
 
-  
+
 
   @override
 void initState() {
@@ -104,17 +104,18 @@ void initState() {
 if (widget.existingData != null) {
   final data = widget.existingData!;
 
-  _startDateController.text = data['ot_datead'] ?? '';   // 🔁 changed
-  _endDateController.text = data['ot_datebs'] ?? '';     // 🔁 changed
-  _startTimeController.text = data['ot_starttime'] ?? ''; // 🔁 changed
-  _endTimeController.text = data['ot_endtime'] ?? '';     // 🔁 changed
+  _startDateController.text = data['ot_datead'] ?? '';   
+  _endDateController.text = data['ot_datebs'] ?? '';     
+  _startTimeController.text = data['ot_starttime'] ?? ''; 
+  _endTimeController.text = data['ot_endtime'] ?? '';     
   _remarksController.text = data['remarks'] ?? '';
 
-  _masterId = data['master_id'] != null
-      ? int.tryParse(data['master_id'].toString())
-      : null;
+  _id = data['id'] != null
+    ? int.tryParse(data['id'].toString())
+    : null;
 
-  print("DEBUG: Master ID = $_masterId");
+   print("DEBUG: ID = $_id");
+
   _calculateTotalHours();
 }
 }
@@ -230,7 +231,6 @@ void _calculateTotalHours() {
 
 
 String _getDateType() {
-  // If either start or end is BS → NP
   if (_startIsBS || _endIsBS) {
     return "NP";
   } else {
@@ -269,8 +269,10 @@ Future<void> _submitForm() async {
 
   final url = Uri.parse("${baseUrl}/api/v1/save_overtime_request");
 
-  final operation = _masterId != null ? "update" : "insert";
-  print("DEBUG: Submitting form with masterId = $_masterId, operation = $operation");
+  
+  final operation = _id != null ? "update" : "insert";
+print("DEBUG: Submitting form with id = $_id, operation = $operation");
+
 
   final body = {
   "ot_dates": [_startDateController.text],
@@ -279,7 +281,7 @@ Future<void> _submitForm() async {
   "ot_endtimes": [_endTimeController.text],
   "operation": operation,
   "remarks": _remarksController.text,
-   if (_masterId != null) "master_id": _masterId, // include master_id for update
+   if (_id != null) "id": _id,
 };
 
 // ✅ EXTRA DEBUG PRINTS
@@ -318,30 +320,6 @@ print("============================================");
     print("Response Status Code: ${response.statusCode}");
     print("Response Body: ${response.body}");
 
-  // try {
-  // final headers = {
-  //   "Authorization": "Bearer ${prefs.getString('token') ?? ''}",
-  //   "Content-Type": "application/json",
-  //   "employee_id": empId,
-  //   "org_id": orgId,
-  //   "location_id": locationId,
-  //   "date_type": _getDateType(),
-  // };
-
-  // print("========== OVERTIME REQUEST DEBUG ==========");
-  // print("Request URL: $url");
-  // print("✅ Headers loaded: $headers");
-  // print("📤 Request Body: ${jsonEncode(body)}");
- 
-
-  // final response = await http.post(
-  //   url,
-  //   headers: headers,
-  //   body: jsonEncode(body),
-  // );
-
-  // print("Response Status Code: ${response.statusCode}");
-  // print("Response Body: ${response.body}");
 
 
     final responseData = jsonDecode(response.body);
@@ -373,11 +351,7 @@ Navigator.pushReplacement(
   context,
   MaterialPageRoute(builder: (_) => const OverTimeHistoryPage()),
 );
-
-
-
-        
-      }
+   }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(

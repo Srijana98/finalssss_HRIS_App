@@ -39,7 +39,6 @@ class _FieldVisitEntryPageState extends State<FieldVisitEntryPage> {
   File? _selectedFile;
   final Color _customBlue = const Color(0xFF346CB0);
 
-  // ✅ NEW VARIABLES for dropdowns
   Map<String, String> _travelTypes = {};
   List<Map<String, String>> _transportationModes = [];
   List<Map<String, String>> _budgetHeads = [];
@@ -51,7 +50,6 @@ class _FieldVisitEntryPageState extends State<FieldVisitEntryPage> {
   int? recordId;
   
 
-  // For BS/AD toggle
   bool _fromIsBS = true;
   bool _toIsBS = true;
   
@@ -65,24 +63,15 @@ class _FieldVisitEntryPageState extends State<FieldVisitEntryPage> {
     return DateFormat('yyyy/MM/dd').format(ad);
   } catch (e) {
     print("Date conversion error: $e");
-    return bsDate; // fallback
+    return bsDate; 
   }
 }
-
-
-
 
 @override
 void initState() {
   super.initState();
   _loadData();
 }
-
-
-
-
-
-
 
 Future<void> _loadData() async {
   await _fetchDropdownData();
@@ -190,10 +179,6 @@ Future<void> _loadData() async {
     }
   }
 
-
-  
-
-
   @override
   void dispose() {
     _fromDateController.dispose();
@@ -244,9 +229,6 @@ Future<void> _loadData() async {
       });
     }
   }
-
-
-
 String _getDateType() {
   // If ANY date is in Nepali (BS), send "NP"
   if (_fromIsBS || _toIsBS) {
@@ -254,8 +236,6 @@ String _getDateType() {
   }
   return "EN";
 }
-
-  
 
     Future<void> _submitForm() async {
     if (_selectedTravelType == null ||
@@ -347,7 +327,7 @@ final response = await http.post(
     'locationid': locationId,
     'date-type': _getDateType(),
   },
-  body: jsonEncode(body), // ✅ uncomment this line
+  body: jsonEncode(body), 
 );
 
 print('🟦 Status Code: ${response.statusCode}');
@@ -364,9 +344,8 @@ print('🟣 Response Body: ${response.body}');
           backgroundColor: Color(0xFF346CB0),
         ),
       );
-//Navigator.pop(context); // Just go back
+
       Navigator.pop(context, true);
-// History page will auto-refresh because of initState()
 
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -473,10 +452,7 @@ print('🟣 Response Body: ${response.body}');
       ],
     );
   }
-
-  
-  
-  Widget _buildAttachmentField() {
+ Widget _buildAttachmentField() {
     return Row(
       children: [
         ElevatedButton(
@@ -573,8 +549,6 @@ Future<void> _pickArrivalDate(Map<String, String> row) async {
   }
   setState(() {});
 }
-
-// field for the data table
 Widget _buildSummarizedRemarksTable() {
   if (_summarizedRemarks.isEmpty) {
     return Padding(
@@ -604,7 +578,7 @@ Widget _buildSummarizedRemarksTable() {
        
        DataColumn(
   label: SizedBox(
-    width: 130, // ← your new width
+    width: 130,
     child: Text('Arrival Date', 
       style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
     ),

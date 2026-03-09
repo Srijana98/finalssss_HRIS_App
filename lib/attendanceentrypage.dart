@@ -1,14 +1,20 @@
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 import 'attendancerequestpage.dart';
+import 'config.dart';
 
 void main() {
   runApp(const AttendanceRequestApp());
 }
 
 class AttendanceRequestApp extends StatelessWidget {
-  const AttendanceRequestApp({super.key,});
+final Map<String, dynamic>? existingData; 
+ const AttendanceRequestApp({super.key, this.existingData}); 
 
   @override
   Widget build(BuildContext context) {
@@ -31,14 +37,17 @@ class AttendanceRequestApp extends StatelessWidget {
           contentPadding: EdgeInsets.symmetric(vertical: 6),
         ),
       ),
-      home: AttendanceRequestPage(),
+     home: AttendanceRequestPage(existingData: existingData),
     );
   }
 }
 
 class AttendanceRequestPage extends StatefulWidget {
- 
-  const AttendanceRequestPage();
+
+  final Map<String, dynamic>? existingData; 
+
+  const AttendanceRequestPage({Key? key, this.existingData}) : super(key: key);
+  
 
   @override
   State<AttendanceRequestPage> createState() => _AttendanceRequestPageState();
@@ -56,15 +65,58 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
 
   bool _fromIsBS = true;
   bool _toIsBS = true;
+  bool _isSubmitting = false;
+
+  String _empId = '';
+  String _orgId = '';
+  String _locationId = '';
+  String? _recordId;
+
 
   @override
-  void initState() {
-    super.initState();
-    _DateController = TextEditingController();
-   _checkInTimeController = TextEditingController();
-   _checkOutTimeController = TextEditingController();
-   _remarksController = TextEditingController();
-   _selectedType = 'Check In';
+void initState() {
+  super.initState();
+  _DateController = TextEditingController();
+  _checkInTimeController = TextEditingController();
+  _checkOutTimeController = TextEditingController();
+  _remarksController = TextEditingController();
+  _selectedType = 'Check In';
+  _loadUserData();
+
+  // Prefill if existingData is provided
+  if (widget.existingData != null) {
+    final data = widget.existingData!;
+    _recordId = data['id']?.toString(); 
+    _DateController.text = data['att_datebs'] ?? ''; 
+    _remarksController.text = data['remarks'] ?? '';
+    _selectedType = (data['att_type'] == 'CHECKIN')
+        ? 'Check In'
+        : (data['att_type'] == 'CHECKOUT')
+            ? 'Check Out'
+            : 'Both';
+    if (_selectedType == 'Check In' || _selectedType == 'Both') {
+      _checkInTimeController.text = data['att_time'] ?? '';
+    }
+    if (_selectedType == 'Check Out' || _selectedType == 'Both') {
+      _checkOutTimeController.text = data['att_time'] ?? '';
+    }
+  }
+}
+
+
+  Future<void> _loadUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _empId = prefs.getString('employee_id') ?? '';
+      _orgId = prefs.getString('org_id') ?? '';
+      _locationId = prefs.getString('location_id') ?? '';
+    });
+
+    print("====== DEBUG ATTENDANCE PAGE ======");
+    print("employee_id: $_empId");
+    print("org_id: $_orgId");
+    print("location_id: $_locationId");
+   
   }
 
   @override
@@ -109,7 +161,10 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
       initialTime: TimeOfDay.now(),
     );
     if (pickedTime != null) {
-      controller.text = pickedTime.format(context);
+      // Convert to 24-hour format HH:mm
+      final hour = pickedTime.hour.toString().padLeft(2, '0');
+      final minute = pickedTime.minute.toString().padLeft(2, '0');
+      controller.text = '$hour:$minute';
     }
   }
 
@@ -119,16 +174,15 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 13, height: 0.6)),
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600, fontSize: 13, height: 0.6)),
           const SizedBox(height: 4),
           field,
         ],
       ),
     );
   }
-
-  
-
 
   Widget _buildTimeField(TextEditingController controller) {
     return GestureDetector(
@@ -137,71 +191,71 @@ class _AttendanceRequestPageState extends State<AttendanceRequestPage> {
         child: TextField(
           controller: controller,
           style: const TextStyle(fontSize: 13),
-          decoration: InputDecoration(
-            contentPadding: const EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+          decoration: const InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
             isDense: true,
-            suffixIcon: const Padding(
+            suffixIcon: Padding(
               padding: EdgeInsets.only(right: 8.0),
               child: Icon(Icons.access_time, size: 18, color: Color(0xFF346CB0)),
             ),
-            suffixIconConstraints: const BoxConstraints(minHeight: 20, minWidth: 20),
-            border: const OutlineInputBorder(),
+            suffixIconConstraints: BoxConstraints(minHeight: 20, minWidth: 20),
+            border: OutlineInputBorder(),
           ),
         ),
       ),
     );
   }
 
+  Widget _buildDateField(TextEditingController controller, bool isFromDate) {
+    final isBS = isFromDate ? _fromIsBS : _toIsBS;
 
-Widget _buildDateField(TextEditingController controller, bool isFromDate) {
-  final isBS = isFromDate ? _fromIsBS : _toIsBS;
-
-  return Stack(
-    children: [
-      GestureDetector(
-        onTap: () => _selectDate(controller, isFromDate),
-        child: AbsorbPointer(
-          child: TextField(
-            controller: controller,
-            style: const TextStyle(fontSize: 13),
-            decoration: const InputDecoration(
-              isDense: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
-              border: OutlineInputBorder(),
+    return Stack(
+      children: [
+        GestureDetector(
+          onTap: () => _selectDate(controller, isFromDate),
+          child: AbsorbPointer(
+            child: TextField(
+              controller: controller,
+              style: const TextStyle(fontSize: 13),
+              decoration: const InputDecoration(
+                isDense: true,
+                contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+                border: OutlineInputBorder(),
+              ),
             ),
           ),
         ),
-      ),
-      Positioned(
-        right: 6,
-        top: 6,
-        child: GestureDetector(
-          onTap: () {
-            setState(() {
-              if (isFromDate) {
-                _fromIsBS = !_fromIsBS;
-              } else {
-                _toIsBS = !_toIsBS;
-              }
-            });
-            _selectDate(controller, isFromDate);
-          },
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-            decoration: BoxDecoration(
-              color: const Color(0xFF346CB0),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              isBS ? 'BS' : 'AD',
-              style: const TextStyle(fontSize: 10, color: Colors.white),
+        Positioned(
+          right: 6,
+          top: 6,
+          child: GestureDetector(
+            onTap: () {
+              setState(() {
+                if (isFromDate) {
+                  _fromIsBS = !_fromIsBS;
+                } else {
+                  _toIsBS = !_toIsBS;
+                }
+              });
+              _selectDate(controller, isFromDate);
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+              decoration: BoxDecoration(
+                color: const Color(0xFF346CB0),
+                borderRadius: BorderRadius.circular(4),
+              ),
+              child: Text(
+                isBS ? 'BS' : 'AD',
+                style: const TextStyle(fontSize: 10, color: Colors.white),
+              ),
             ),
           ),
         ),
-      ),
-    ],
-  );
-}
+      ],
+    );
+  }
+
   Widget _buildDropdownField() {
     return DropdownButtonFormField<String>(
       value: _selectedType,
@@ -239,32 +293,112 @@ Widget _buildDateField(TextEditingController controller, bool isFromDate) {
     );
   }
 
- 
-  void _submitForm() {
+
+Future<void> _submitForm() async {
   if (_DateController.text.isEmpty ||
-      (_selectedType == 'Check In' || _selectedType == 'Both') && _checkInTimeController.text.isEmpty ||
-      (_selectedType == 'Check Out' || _selectedType == 'Both') && _checkOutTimeController.text.isEmpty) {
+      ((_selectedType == 'Check In' || _selectedType == 'Both') &&
+          _checkInTimeController.text.isEmpty) ||
+      ((_selectedType == 'Check Out' || _selectedType == 'Both') &&
+          _checkOutTimeController.text.isEmpty) ||
+      _remarksController.text.trim().isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('Please fill out all the fields.'),
+        content: Text('Please fill all required fields.'),
         backgroundColor: Colors.red,
       ),
     );
     return;
   }
 
-  ScaffoldMessenger.of(context).showSnackBar(
-    const SnackBar(
-      content: Text('Attendance request submitted successfully', style: TextStyle(color: Colors.white)),
-      backgroundColor: Color(0xFF346CB0),
-    ),
-  );
+  setState(() => _isSubmitting = true);
 
-  Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (_) => AttendanceHistoryPage())
-  );
+  try {
+    // 🔹 Determine attendance type
+    String attType = _selectedType == 'Check In'
+        ? 'CHECKIN'
+        : _selectedType == 'Check Out'
+            ? 'CHECKOUT'
+            : 'BOTH';
+
+    // 🔹 Determine date type
+    String dateType = _fromIsBS ? 'NP' : 'EN';
+
+    // 🔹 API headers
+    final headers = {
+      'Content-Type': 'application/json',
+      'empid': _empId,
+      'orgid': _orgId,
+      'locationid': _locationId,
+      'date_type': dateType,
+    };
+
+    // 🔹 API body
+    final Map<String, dynamic> body = {
+      'att_type': attType,
+      'cur_date': [_DateController.text.trim()],
+      'overall_remarks': _remarksController.text.trim(),
+    };
+
+
+    // 🔹 Conditionally include times
+    if (attType == 'CHECKIN' || attType == 'BOTH') {
+      body['cur_checkin_time'] = [_checkInTimeController.text.trim()];
+    }
+    if (attType == 'CHECKOUT' || attType == 'BOTH') {
+      body['cur_checkout_time'] = [_checkOutTimeController.text.trim()];
+    }
+     
+     if (_recordId != null && _recordId!.isNotEmpty) {
+  body['id'] = _recordId;
 }
+    // 🔹 Debug prints
+    print('--- Request Headers ---');
+    headers.forEach((key, value) => print('$key: $value'));
+    print('--- Request Body ---');
+    print(jsonEncode(body));
+
+    // 🔹 API call
+    final response = await http.post(
+      Uri.parse('$baseUrl/api/v1/save_manual_attendance'),
+      headers: headers,
+      body: jsonEncode(body),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode == 200 && data['status'] == 'success') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(data['message'] ?? 'Attendance saved'),
+          backgroundColor: _customBlue,
+        ),
+      );
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (_) => AttendanceHistoryPage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(data['message'] ?? 'Failed to save attendance'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Error: $e'),
+        backgroundColor: Colors.red,
+      ),
+    );
+  } finally {
+    setState(() => _isSubmitting = false);
+  }
+}
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -278,39 +412,50 @@ Widget _buildDateField(TextEditingController controller, bool isFromDate) {
               context, MaterialPageRoute(builder: (_) => AttendanceHistoryPage())),
         ),
         title: const Text("Attendance Entry",
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
+            style: TextStyle(
+                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16)),
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          children: [
-            _buildRow(' Date:', _buildDateField(_DateController, true)),
-          
-            _buildRow('Attendance Type:', _buildDropdownField()),
-            if (_selectedType == 'Check In' || _selectedType == 'Both')
-              _buildRow('Check In Time:', _buildTimeField(_checkInTimeController)),
-            if (_selectedType == 'Check Out' || _selectedType == 'Both')
-              _buildRow('Check Out Time:', _buildTimeField(_checkOutTimeController)),
-            _buildRow('Remarks:', _buildRemarksField()),
-            const SizedBox(height: 24),
-            Center(
-              child: ElevatedButton(
-                onPressed: _submitForm,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _customBlue,
-                  padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+      body: Stack(
+        children: [
+          SingleChildScrollView(
+            padding: const EdgeInsets.all(18),
+            child: Column(
+              children: [
+                _buildRow('Date:', _buildDateField(_DateController, true)),
+                _buildRow('Attendance Type:', _buildDropdownField()),
+                if (_selectedType == 'Check In' || _selectedType == 'Both')
+                  _buildRow('Check In Time:', _buildTimeField(_checkInTimeController)),
+                if (_selectedType == 'Check Out' || _selectedType == 'Both')
+                  _buildRow('Check Out Time:', _buildTimeField(_checkOutTimeController)),
+                _buildRow('Remarks:', _buildRemarksField()),
+                const SizedBox(height: 24),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: _isSubmitting ? null : _submitForm,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _customBlue,
+                      padding: const EdgeInsets.symmetric(horizontal: 36, vertical: 12),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      disabledBackgroundColor: _customBlue.withOpacity(0.6),
+                    ),
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Submit',
+                            style: TextStyle(color: Colors.white, fontSize: 13)),
+                  ),
                 ),
-                child: const Text('Submit', style: TextStyle(color: Colors.white, fontSize: 13)),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
-  }
-
-
-
-
+}

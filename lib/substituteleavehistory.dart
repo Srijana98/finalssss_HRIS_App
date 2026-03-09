@@ -19,12 +19,17 @@ class _SubstituteHistoryPageState extends State<SubstituteHistoryPage> {
   DateTime? _toDate;
   bool _isLoading = true;
   Map<String, dynamic>? _apiData;
-  List<dynamic> _pendingLeaves = [];
   
+  // Lists for all tabs
+  List<dynamic> _pendingLeaves = [];
+  List<dynamic> _reviewLeaves = [];
+  List<dynamic> _approvedLeaves = [];
+  List<dynamic> _rejectLeaves = [];
   
   String _empId = '';
   String _orgId = '';
   String _locationId = '';
+  
 
   @override
   void initState() {
@@ -56,59 +61,149 @@ class _SubstituteHistoryPageState extends State<SubstituteHistoryPage> {
     }
   }
 
-  Future<void> _fetchSubstituteLeaveData() async {
-    setState(() {
-      _isLoading = true;
-    });
+  
+Future<void> _fetchSubstituteLeaveData() async {
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final response = await http.get(
-        Uri.parse('$baseUrl/api/v1/deposit_substitute_leave'),
-        headers: {
-          'empid': _empId,
-          'orgid': _orgId,
-          'locationid': _locationId,
-          'date_type': 'EN',
-        },
-      );
+  try {
+    final response = await http.get(
+      Uri.parse('$baseUrl/api/v1/deposit_substitute_leave'),
+      headers: {
+        'empid': _empId,
+        'orgid': _orgId,
+        'locationid': _locationId,
+        'date_type': 'EN',
+      },
+    );
 
-      print("====== API RESPONSE ======");
-      print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-      print("==========================");
+    print("====== API RESPONSE ======");
+    print("Status Code: ${response.statusCode}");
+    print("Response Body: ${response.body}");
 
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          _apiData = data;
-          if (data['status'] == 'success' && data['data'] != null) {
-            final statusWiseHistory = data['data']['statusWiseHistory'] ?? {};
-            _pendingLeaves = statusWiseHistory['Pending'] ?? [];
-           
-            
-          }
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _isLoading = false;
-        });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to load data: ${response.statusCode}')),
-        );
-      }
-    } catch (e) {
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        _apiData = data;
+        if (data['status'] == 'success' && data['data'] != null) {
+          final statusWiseHistory = data['data']['statusWiseHistory'] ?? {};
+          _pendingLeaves = statusWiseHistory['Pending'] ?? [];
+          _reviewLeaves = statusWiseHistory['Review'] ?? [];
+          _approvedLeaves = statusWiseHistory['Approved'] ?? [];
+          _rejectLeaves = statusWiseHistory['Reject'] ?? []; 
+          
+          print("Pending: ${_pendingLeaves.length}");
+          print("Review: ${_reviewLeaves.length}");
+          print("Approved: ${_approvedLeaves.length}");
+          print("Reject: ${_rejectLeaves.length}"); 
+        }
+        _isLoading = false;
+      });
+    } else {
       setState(() {
         _isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text('Failed to load data: ${response.statusCode}')),
       );
-      print("====== ERROR ======");
-      print("$e");
-      print("===================");
     }
+  } catch (e) {
+    setState(() {
+      _isLoading = false;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+    print("====== ERROR ======");
+    print("$e");
   }
+}
+
+
+Future<void> cancelSubstituteRequest(String id, int index) async {
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final empId = prefs.getString('employee_id') ?? '';
+    final orgId = prefs.getString('org_id') ?? '';
+    final locationId = prefs.getString('location_id') ?? '';
+
+    final url = Uri.parse('$baseUrl/api/v1/substitue_leave_cancel_record');
+
+    final requestBody = {
+      "id": int.parse(id),
+    };
+
+    print('🔹 Cancel Substitute URL: $url');
+    print('🔹 Headers: {empid: $empId, orgid: $orgId, locationid: $locationId}');
+    print('🔹 Body: ${jsonEncode(requestBody)}');
+
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'empid': empId,
+        'orgid': orgId,
+        'locationid': locationId,
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    print('🔹 Response Code: ${response.statusCode}');
+    print('🔹 Response Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+
+      if (data['status'] == 'success') {
+        setState(() {
+          _pendingLeaves.removeAt(index);
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Record canceled successfully"),
+            backgroundColor: Colors.green,
+          ),
+        );
+        await _fetchSubstituteLeaveData(); 
+       } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data['message'] ?? "Failed to cancel request"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } else if (response.statusCode == 422) {
+      print('🔴 422 Validation Error');
+      final errorData = jsonDecode(response.body);
+      print('🔴 Full Error: $errorData');
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Validation Error: ${errorData['message'] ?? 'Invalid data'}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Server Error ${response.statusCode}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  } catch (e) {
+    print('🔴 Exception: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text("Error: $e"),
+        backgroundColor: Colors.red,
+      ),
+    );
+  }
+}
 
   Future<void> _selectDate(bool isFrom) async {
     final DateTime? picked = await showDatePicker(
@@ -152,139 +247,199 @@ class _SubstituteHistoryPageState extends State<SubstituteHistoryPage> {
       ),
     );
   }
-Widget _buildLeaveCard(Map<String, dynamic> leave, String status) {
-  final List<dynamic> substitutes =
-      leave['substitutes'] as List<dynamic>? ?? [];
 
-  return Card(
-    margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-    color: Colors.white,
-    elevation: 2,
-    shape: RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(12),
-      side: const BorderSide(color: Color(0xFF346CB0)),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+  Widget _buildLeaveCard(Map<String, dynamic> leave, String status, int index) {
+    final List<dynamic> substitutes =
+        leave['substitutes'] as List<dynamic>? ?? [];
 
-        
-          ...substitutes.asMap().entries.map((entry) {
-            final int index = entry.key;
-            final dynamic substitute = entry.value;
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: Color(0xFF346CB0)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ...substitutes.asMap().entries.map((entry) {
+              final int subIndex = entry.key;
+              final dynamic substitute = entry.value;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (substitutes.length > 1) ...[
-                  Text(
-                    'Entry ${index + 1}:',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF346CB0),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                ],
-
-                /// Duty Date
-                Text(
-                  'Duty Date: ${substitute['substitute_datebs'] ?? 'N/A'}',
-                  style: const TextStyle(fontSize: 14),
-                ),
-
-                const SizedBox(height: 4),
-
-                /// Attendance
-                const Text(
-                  'Attendance: No Attendance Record',
-                  style: TextStyle(fontSize: 14),
-                ),
-
-                const SizedBox(height: 4),
-
-                /// Remarks
-                Text(
-                  'Remarks: ${substitute['substitute_remarks']?.isNotEmpty == true ? substitute['substitute_remarks'] : 'No remarks'}',
-                  style: const TextStyle(fontSize: 14),
-                ),
-
-                if (index < substitutes.length - 1) ...[
-                 
-                ],
-              ],
-            );
-          }).toList(),
-
-
-          /// General Remarks (only once)
-          Text(
-            'General Remarks: ${leave['remarks']?.isNotEmpty == true ? leave['remarks'] : 'No remarks'}',
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          const SizedBox(height: 6),
-
-          /// Request Date (only once)
-          Text(
-            'Request Date: ${leave['postdatebs'] ?? 'N/A'}',
-            style: const TextStyle(
-              fontSize: 14,
-              color: Colors.black87,
-               fontWeight: FontWeight.w500,
-            ),
-          ),
-
-          if (status == 'Pending')
-            Padding(
-              padding: const EdgeInsets.only(top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(
-                    height: 30,
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.edit, size: 14),
-                      label: const Text('Update', style: TextStyle(fontSize: 12)),
-                      onPressed: () async {
-                        await Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => SubstituteLeavePage(),
-                          ),
-                        );
-                        _fetchSubstituteLeaveData();
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  SizedBox(
-                    height: 30,
-                    child: OutlinedButton.icon(
-                      icon: const Icon(Icons.delete, size: 14),
-                      label: const Text('Cancel', style: TextStyle(fontSize: 12)),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.red,
-                        side: const BorderSide(color: Colors.red),
+                  if (substitutes.length > 1) ...[
+                    Text(
+                      'Entry ${subIndex + 1}:',
+                      style: const TextStyle(
+                        fontSize: 13,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF346CB0),
                       ),
-                      onPressed: () {},
                     ),
+                    const SizedBox(height: 4),
+                  ],
+
+                  Text(
+                    'Duty Date: ${substitute['substitute_datebs'] ?? 'N/A'}',
+                    style: const TextStyle(fontSize: 14),
                   ),
+
+                  const SizedBox(height: 4),
+
+             
+                  const Text(
+                    'Attendance: No Attendance Record',
+                    style: TextStyle(fontSize: 14),
+                  ),
+
+                  const SizedBox(height: 4),
+
+                  Text(
+                    'Remarks: ${substitute['substitute_remarks']?.isNotEmpty == true ? substitute['substitute_remarks'] : 'No remarks'}',
+                    style: const TextStyle(fontSize: 14),
+                  ),
+
+                  if (subIndex < substitutes.length - 1) ...[
+                   
+                  ],
                 ],
+              );
+            }).toList(),
+
+            Text(
+              'General Remarks: ${leave['remarks']?.isNotEmpty == true ? leave['remarks'] : 'No remarks'}',
+              style: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
               ),
             ),
-        ],
-      ),
+
+            const SizedBox(height: 6),
+
+            
+            Text(
+              'Request Date: ${leave['postdatebs'] ?? 'N/A'}',
+              style: const TextStyle(
+                fontSize: 14,
+                color: Colors.black87,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+
+            if (status == 'Pending')
+              Padding(
+                padding: const EdgeInsets.only(top: 12),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      height: 30,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () async {
+                          await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => SubstituteLeavePage(
+                                existingLeaveData: leave,
+                              ),
+                            ),
+                          );
+                          _fetchSubstituteLeaveData();
+                        },
+                        icon: const Icon(Icons.edit, size: 14),
+                        label: const Text('Update', style: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    SizedBox(
+                      height: 30,
+                      child: OutlinedButton.icon(
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          foregroundColor: Colors.red,
+                          side: const BorderSide(color: Colors.red),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                        ),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                title: const Text(
+                                  "HRMS says,",
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                content: const Text("Are you sure you want to cancel the record?"),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text(
+                                      "Cancel",
+                                      style: TextStyle(color: Colors.grey),
+                                    ),
+                                  ),
+                                 
+                                  ElevatedButton(
+  style: ElevatedButton.styleFrom(
+    backgroundColor: const Color(0xFF346CB0),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(8),
     ),
-  );
-}
-@override
+  ),
+  onPressed: () async {
+    Navigator.pop(context); 
+    
+    await cancelSubstituteRequest(
+      leave['leave_assign_masterid']!.toString(),
+      index,
+    );
+  },
+  child: const Text(
+    "OK",
+    style: TextStyle(color: Colors.white),
+  ),
+),
+                                ],
+                              );
+                            },
+                          );
+                        },
+                        icon: const Icon(Icons.delete, size: 14),
+                        label: const Text('Cancel', style: TextStyle(fontSize: 12)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DefaultTabController(
       length: tabs.length,
@@ -361,7 +516,7 @@ Widget _buildLeaveCard(Map<String, dynamic> leave, String status) {
                                       ),
                                     ),
                                     onPressed: () {
-                                      setState(() {});
+                                      _fetchSubstituteLeaveData();
                                     },
                                     child: const Text(
                                       'Filter',
@@ -388,10 +543,12 @@ Widget _buildLeaveCard(Map<String, dynamic> leave, String status) {
                         tabs: tabs.map((tab) => Tab(text: tab)).toList(),
                       ),
 
+                 
+
                       Expanded(
   child: TabBarView(
     children: [
-      // Pending
+    
       _pendingLeaves.isEmpty
           ? const Center(child: Text("No Pending Records"))
           : ListView.builder(
@@ -400,23 +557,52 @@ Widget _buildLeaveCard(Map<String, dynamic> leave, String status) {
                 return _buildLeaveCard(
                   _pendingLeaves[index],
                   'Pending',
+                  index,
                 );
               },
             ),
 
-      // Review
-      const Center(child: Text("No Review Records")),
+      _reviewLeaves.isEmpty
+          ? const Center(child: Text("No Review Records"))
+          : ListView.builder(
+              itemCount: _reviewLeaves.length,
+              itemBuilder: (context, index) {
+                return _buildLeaveCard(
+                  _reviewLeaves[index],
+                  'Review',
+                  index,
+                );
+              },
+            ),
 
-      // Approved
-      const Center(child: Text("No Approved Records")),
-
-      // Reject
-      const Center(child: Text("No Rejected Records")),
+    
+      _approvedLeaves.isEmpty
+          ? const Center(child: Text("No Approved Records"))
+          : ListView.builder(
+              itemCount: _approvedLeaves.length,
+              itemBuilder: (context, index) {
+                return _buildLeaveCard(
+                  _approvedLeaves[index],
+                  'Approved',
+                  index,
+                );
+              },
+            ),
+      _rejectLeaves.isEmpty
+          ? const Center(child: Text("No Rejected Records"))
+          : ListView.builder(
+              itemCount: _rejectLeaves.length,
+              itemBuilder: (context, index) {
+                return _buildLeaveCard(
+                  _rejectLeaves[index],
+                  'Reject',
+                  index,
+                );
+              },
+            ),
     ],
   ),
 ),
-
-                    
                     ],
                   ),
                   Positioned(
@@ -456,3 +642,10 @@ Widget _buildLeaveCard(Map<String, dynamic> leave, String status) {
     );
   }
 }
+
+
+
+
+
+
+

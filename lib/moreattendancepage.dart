@@ -26,7 +26,7 @@ class _MoreAttendancePageState extends State<MoreAttendancePage> {
   @override
   void initState() {
     super.initState();
-    _fetchAttendanceLog(); // 👈 This automatically loads data when page opens
+    _fetchAttendanceLog(); 
   }
 
 
@@ -136,7 +136,7 @@ class _MoreAttendancePageState extends State<MoreAttendancePage> {
 Future<void> _fetchAttendanceLog() async {
   try {
     setState(() {
-      _attendanceData = []; // clear old data
+      _attendanceData = []; 
     });
 
     final prefs = await SharedPreferences.getInstance();
@@ -191,7 +191,7 @@ Future<void> _fetchAttendanceLog() async {
             'sn': sn.toString(),
             'dateAD': dateAD,
             'dateBS': dateBS,
-            'days': '-', // Not provided in response
+            'days': '-', 
             'shift': shiftName,
             'checkIn': activity['checkin']?.toString().isNotEmpty == true
                 ? activity['checkin'].toString()

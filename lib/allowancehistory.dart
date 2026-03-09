@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'allowanceentry.dart'; // Make sure this import points to your AllowanceEntryPage file
+import 'allowanceentry.dart'; 
+import 'config.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
+
+
 
 class AllowanceHistoryPage extends StatefulWidget {
   @override
@@ -31,7 +37,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
   }
 
   String _formatDate(DateTime? date) {
-    return date != null ? DateFormat('yyyy-MM-dd').format(date) : '';
+    return date != null ? DateFormat('yyyy/MM/dd').format(date) : '';
   }
 
   @override
@@ -135,7 +141,6 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
                                 ),
                               ),
                               onPressed: () {
-                                // TODO: Add filter logic here
                               },
                               child: const Text(
                                 'Filter',
@@ -154,7 +159,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // TabBar with scroll enabled
+  
                 TabBar(
                   isScrollable: true,
                   indicatorColor: const Color(0xFF346CB0),
@@ -164,7 +169,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
                   tabs: tabs.map((tab) => Tab(text: tab)).toList(),
                 ),
 
-                // TabBarView content
+               
                 Expanded(
                   child: TabBarView(
                     children: tabs.map((tab) {
@@ -180,7 +185,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
               ],
             ),
 
-            // Request button
+          
             Positioned(
               bottom: 20,
               right: 16,

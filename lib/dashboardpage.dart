@@ -66,7 +66,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   'HRMS Dashboard',
                   style: TextStyle(
                       color: Colors.white,
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w500),
                 ),
                 actions: [
@@ -102,7 +102,7 @@ Padding(
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(6),
     ),
-    icon: const Icon(Icons.account_circle, size: 30, color: Colors.white),
+    icon: const Icon(Icons.account_circle, size: 25, color: Colors.white),
     onSelected: (value) async {
       if (value == 1) {
         // Profile
@@ -271,8 +271,8 @@ Stack(
   children: [
     _buildHeader(),
     Positioned(
-     // bottom: -55, // 👈 this controls how much it overlaps
-      bottom: -80, 
+     // bottom: -80, 
+      bottom: -55,
       left: 8,
       right: 8,
       child: _buildAttendanceCard(),
@@ -281,20 +281,20 @@ Stack(
 ),
 
 // space between the my attendance and the grid icon
-const SizedBox(height: 100),
- // 👈 give space below to prevent cutoff
 
+ const SizedBox(height: 65),
+ 
 
           if (isLoading)
             const CircularProgressIndicator()
           else
             _buildGridSection(),
-          const SizedBox(height: 20),
+          const SizedBox(height: 10),
 
           /// ✅ Leave Balance Section (ADDED HERE)
           _buildLeaveBalanceSection(context),
 
-          const SizedBox(height: 15),
+          const SizedBox(height: 10),
 
           _buildRequestSection(),
           const SizedBox(height: 10),
@@ -305,7 +305,7 @@ const SizedBox(height: 100),
 
   Widget _buildHeader() {
     return Container(
-      height: 160,
+      height: 150,
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -341,7 +341,7 @@ const SizedBox(height: 100),
                       style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
-                          fontSize: 12)),
+                          fontSize: 13)),
                   Text('Designation: $designation',
                       style: const TextStyle(color: Colors.white, fontSize: 11),
                       maxLines: 2,
@@ -366,7 +366,7 @@ const SizedBox(height: 100),
 
   Widget _buildAttendanceCard() {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
 
       decoration: BoxDecoration(
         color: Colors.white,
@@ -384,8 +384,12 @@ const SizedBox(height: 100),
               Text("My Attendance Log",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                      color: Colors.indigo[900])),
+                      fontSize: 14,
+                     // color: Colors.indigo[900])
+                      color: Color(0xFF346CB0))
+                      ),
+                      
+
               InkWell(
                 onTap: () {
                   Navigator.push(
@@ -396,9 +400,9 @@ const SizedBox(height: 100),
                     ),
                   );
                 },
-                borderRadius: BorderRadius.circular(20),
+                borderRadius: BorderRadius.circular(15),
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                   decoration: BoxDecoration(
                     color: Colors.indigo[50],
                     borderRadius: BorderRadius.circular(18),
@@ -417,13 +421,13 @@ const SizedBox(height: 100),
             ],
           ),
        // const SizedBox(height: 3),
-          const SizedBox(height: 2),
-          const SizedBox(width: 12),
+          const SizedBox(height: 1),
+        //  const SizedBox(width: 12),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const Text("Today",
-                  style: TextStyle(color: Colors.black, fontSize: 15)),
+                  style: TextStyle(color: Colors.black, fontSize: 13)),
               Row(
                 children: [
                   _attendanceInfoCard("In", "--"),
@@ -443,7 +447,7 @@ const SizedBox(height: 100),
           children: [
             const Text(
               "Yesterday",
-              style: TextStyle(color: Colors.black, fontSize: 15),
+              style: TextStyle(color: Colors.black, fontSize: 13),
             ),
             Row(
               children: [
@@ -470,8 +474,8 @@ const SizedBox(height: 100),
             style: TextStyle(
                 color: Colors.indigo[900],
                 fontWeight: FontWeight.bold,
-                fontSize: 13)),
-        const SizedBox(height: 4),
+                fontSize: 10)),
+        const SizedBox(height: 2),
         Container(
          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
 
@@ -480,7 +484,7 @@ const SizedBox(height: 100),
             borderRadius: BorderRadius.circular(8),
           ),
           child: Text(time,
-              style: TextStyle(color: Colors.indigo[900], fontSize: 13)),
+              style: TextStyle(color: Colors.indigo[900], fontSize: 12)),
         ),
       ],
     );
@@ -490,7 +494,7 @@ const SizedBox(height: 100),
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8),
       child: Container(
-        padding: const EdgeInsets.all(10),
+        padding: const EdgeInsets.all(8),
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(12),
@@ -501,10 +505,10 @@ const SizedBox(height: 100),
         child: GridView.count(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          crossAxisCount: 3,
-          mainAxisSpacing: 15,
-          crossAxisSpacing: 15,
-          childAspectRatio: 0.95,
+           crossAxisCount: 3,
+           mainAxisSpacing: 8,      
+            crossAxisSpacing: 8,    
+            childAspectRatio: 1.1, 
           children: gridItems
               .map((item) => _gridIcon(item['icon'], item['label']))
               .toList(),
@@ -565,14 +569,14 @@ const SizedBox(height: 100),
         children: [
           CircleAvatar(
           backgroundColor: headerColor, // always headerColor
-          radius: 28,
-          child: Icon(icon, color: Colors.white, size: 26),
+          radius: 20,
+          child: Icon(icon, color: Colors.white, size: 18),
         ),
-          const SizedBox(height: 6),
+            const SizedBox(height: 2),
           Text(label,
               textAlign: TextAlign.center,
               style: const TextStyle(
-                  fontSize: 13,
+                  fontSize: 12,
                   color: Colors.black,
                   fontWeight: FontWeight.w500)),
         ],
@@ -603,9 +607,9 @@ Widget _buildLeaveBalanceSection(BuildContext context) {
           const Text(
             "Leave Balance",
             style: TextStyle(
-              fontSize: 16,
+              fontSize: 14,
               fontWeight: FontWeight.bold,
-              color: Colors.indigo,
+              color: Color(0xFF346CB0)
             ),
           ),
           Column(
@@ -712,12 +716,13 @@ Widget _buildLeaveBalanceSection(BuildContext context) {
             Text("My Requests",
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
-                    color: Colors.indigo[900])),
+                    fontSize: 14,
+                    color: Color(0xFF346CB0))
+                    ),
             const Spacer(),
             TextButton(
               onPressed: () {},
-              child: const Text("More >>", style: TextStyle(fontSize: 14)),
+              child: const Text("More", style: TextStyle(fontSize: 14)),
             ),
           ],
         ),

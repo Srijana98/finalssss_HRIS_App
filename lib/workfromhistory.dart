@@ -18,7 +18,7 @@ class WorkFromHomeHistoryModel {
   final String? fromDateAd;
   final String? toDateAd;
   final String? attachment;
-  final String? dateType; // 'NP' or 'EN'
+  final String? dateType; 
 
   WorkFromHomeHistoryModel({
     this.id,
@@ -29,7 +29,7 @@ class WorkFromHomeHistoryModel {
     this.fromDateAd,
     this.toDateAd,
     this.attachment,
-    this.dateType, // add this
+    this.dateType, 
    
   });
 
@@ -43,7 +43,7 @@ class WorkFromHomeHistoryModel {
       fromDateAd: json['from_datead'],
       toDateAd: json['to_datead'],
       attachment: json['attachment'], 
-      dateType: json['date_type'], // add this
+      dateType: json['date_type'], 
       
     );
   }
@@ -58,7 +58,7 @@ class WorkFromHomeHistoryModel {
       'from_datead': fromDateAd,
       'to_datead': toDateAd,
       'attachment': attachment,
-      'date_type': dateType, // add this
+      'date_type': dateType, 
      
     };
   }
@@ -249,15 +249,7 @@ Future<void> cancelWorkFromHomeRequest(String id, int index) async {
     );
   }
 }
-
-
-
-
-
-
-  
-
-  Future<void> _selectDate(bool isFrom) async {
+Future<void> _selectDate(bool isFrom) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -300,9 +292,6 @@ Future<void> cancelWorkFromHomeRequest(String id, int index) async {
   style: const TextStyle(fontWeight: FontWeight.bold),
 ),
 const SizedBox(height: 4),
-
-
-
 Row(
   children: [
     Expanded(child: Text('Purpose: ${item.purpose ?? 'N/A'}')),
@@ -311,7 +300,7 @@ Row(
 
 OutlinedButton.icon(
   style: OutlinedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), // smaller
+    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4), 
     minimumSize: const Size(60, 28), // make the button smaller
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(8),
@@ -333,7 +322,7 @@ OutlinedButton.icon(
   },
   icon: const Icon(Icons.download, size: 14, color: Color(0xFF346CB0)),
   label: const Text('Attachment',
-      style: TextStyle(fontSize: 11, color: Color(0xFF346CB0))), // smaller font
+      style: TextStyle(fontSize: 11, color: Color(0xFF346CB0))), 
 )
 
   ],
@@ -393,11 +382,11 @@ Builder(
                     context,
                      MaterialPageRoute(
                      builder: (_) => WorkFromHomeEntryPage(
-                     existingData: item.toJson(), // ✅ Pass the selected record
+                     existingData: item.toJson(), 
                       ),
                       ),
                        );
-                     fetchWorkFromHomeHistory(); // Refresh after returning
+                     fetchWorkFromHomeHistory(); 
                       },
 
 

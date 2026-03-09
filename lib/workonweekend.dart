@@ -11,7 +11,7 @@ import 'config.dart';
 
 
 class WorkonWeekendEntryPage extends StatefulWidget {
-  final Map<String, dynamic>? existingData; // ✅ For edit mode
+  final Map<String, dynamic>? existingData; 
 
   const WorkonWeekendEntryPage({super.key, this.existingData});
 
@@ -22,7 +22,7 @@ class WorkonWeekendEntryPage extends StatefulWidget {
 
 class _WorkonWeekendEntryPageState extends State<WorkonWeekendEntryPage> {
   final Color _customBlue = const Color(0xFF346CB0);
-  final String _entryType = 'WORKFROMWEEK'; // ✅ hidden constant
+  final String _entryType = 'WORKFROMWEEK'; 
 
   late TextEditingController _fromDateController;
   late TextEditingController _toDateController;
@@ -53,10 +53,9 @@ if (widget.existingData != null) {
   _purposeController.text = data['purpose'] ?? '';
    recordId = data['id'] != null ? int.tryParse(data['id'].toString()) : null;
 
-  // Prefill Dates based on date_type
 
   // Prefill Dates based on date_type
-  final dateType = data['date_type'] ?? 'NP'; // default NP if missing
+  final dateType = data['date_type'] ?? 'NP'; 
 
   if (dateType == 'EN') {
     _fromDateController.text = data['from_datead'] ?? '';
@@ -70,9 +69,6 @@ if (widget.existingData != null) {
     _toIsBS = true;
   }
 }
-
-
-
 }
 
 
@@ -214,13 +210,6 @@ if (widget.existingData != null) {
     ),
   );
 }
-
-
-
-
-
-
-
 
 Widget _buildAttachmentField() {
   return Column(
@@ -408,13 +397,7 @@ Widget _buildAttachmentField() {
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10)),
                 ),
-                
-//                 child: Text(
-//   widget.existingData == null ? 'Save' : 'Update',
-//   style: const TextStyle(color: Colors.white, fontSize: 13),
-// ),
-
-//               ),
+ 
            child: const Text('Save',
                     style:
                         TextStyle(color: Colors.white, fontSize: 13)),

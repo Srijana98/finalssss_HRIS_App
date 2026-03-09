@@ -11,8 +11,7 @@ import 'config.dart';
 
 
 class WorkFromHomeEntryPage extends StatefulWidget {
-  final Map<String, dynamic>? existingData; // ✅ add this line
-//  const WorkFromHomeEntryPage({super.key});
+  final Map<String, dynamic>? existingData; 
 const WorkFromHomeEntryPage({super.key, this.existingData});
 
 
@@ -30,7 +29,7 @@ class _WorkFromHomeEntryPageState extends State<WorkFromHomeEntryPage> {
 
   bool _fromIsBS = true;
   bool _toIsBS = true;
-  int? recordId; // ✅ Store the id here
+  int? recordId; 
 
   List<PlatformFile> _attachments = [];
 
@@ -55,7 +54,7 @@ if (widget.existingData != null) {
   recordId = data['id'] != null ? int.tryParse(data['id'].toString()) : null;
 
   // Prefill Dates based on date_type
-  final dateType = data['date_type'] ?? 'NP'; // default NP if missing
+  final dateType = data['date_type'] ?? 'NP'; 
 
   if (dateType == 'EN') {
     _fromDateController.text = data['from_datead'] ?? '';
@@ -324,7 +323,7 @@ if (widget.existingData != null) {
     print('🧩 Headers: ${request.headers}');
     print('📦 Fields: ${request.fields}');
     print('📎 Files: ${_attachments.map((f) => f.name).toList()}');
-    print('===========================');
+  
 
     var response = await request.send();
     var responseBody = await response.stream.bytesToString();
@@ -334,7 +333,7 @@ if (widget.existingData != null) {
     print('✅ ====== API RESPONSE ======');
     print('🔢 Status Code: ${response.statusCode}');
     print('💬 Response Body: $responseBody');
-    print('=============================');
+
 
     if (response.statusCode == 200 && result['status'] == 'success') {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(

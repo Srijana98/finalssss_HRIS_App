@@ -9,9 +9,9 @@ import 'lateinhistory.dart';
 
 
 class LateEarlyRequestApp extends StatelessWidget {
-  final Map<String, dynamic>? existingData; // Add this
+  final Map<String, dynamic>? existingData; 
 
-  const LateEarlyRequestApp({super.key, this.existingData}); // Accept it
+  const LateEarlyRequestApp({super.key, this.existingData}); 
 
 
   @override
@@ -85,7 +85,6 @@ void initState() {
   // ✅ Pre-fill form if existingData is passed
   if (widget.existingData != null) {
     final data = widget.existingData!;
-    // recordId = data['id']; // <-- correct way to store id
     recordId = data['id'] != null ? int.tryParse(data['id'].toString()) : null;
     _dateController.text = data['post_date'] ?? '';
     _timeController.text = data['le_time'] ?? '';
