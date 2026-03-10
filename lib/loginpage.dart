@@ -726,7 +726,7 @@ class CurvedPainter extends CustomPainter {
 
 
 
-// loginpage.dart of the gwt with the checkbox
+//loginpage.dart of the gwt with the checkbox
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
 // import 'package:http/http.dart' as http;
@@ -915,7 +915,7 @@ class CurvedPainter extends CustomPainter {
 //                       child: ClipRRect(
 //                         borderRadius: BorderRadius.circular(65),
 //                         child: Image.asset(
-//                           'assets/xelwel logo.png',
+//                           'assets/xelwel logo1.png',
 //                           width: 105,
 //                           height: 105,
 //                           fit: BoxFit.cover,

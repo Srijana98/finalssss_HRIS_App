@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 import 'config.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'dart:io';
 
 class SubmitAttendancePage extends StatefulWidget {
   const SubmitAttendancePage({super.key});
@@ -229,6 +231,45 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
     }
   }
 
+
+
+  Future<Map<String, String>> _getDeviceInfo() async {
+  final deviceInfo = DeviceInfoPlugin();
+  Map<String, String> info = {};
+
+  try {
+    if (Platform.isAndroid) {
+      final android = await deviceInfo.androidInfo;
+      info = {
+        'device_name':    android.model,
+        'device_brand':   android.brand,
+        'device_id':      android.id,
+        'device_os':      'Android ${android.version.release}',
+        'sdk_version':    android.version.sdkInt.toString(),
+        'manufacturer':   android.manufacturer,
+        'is_physical':    android.isPhysicalDevice.toString(),
+      };
+    } else if (Platform.isIOS) {
+      final ios = await deviceInfo.iosInfo;
+      info = {
+        'device_name':    ios.name,
+        'device_model':   ios.model,
+        'device_id':      ios.identifierForVendor ?? 'unknown',
+        'device_os':      'iOS ${ios.systemVersion}',
+        'is_physical':    ios.isPhysicalDevice.toString(),
+      };
+    }
+  } catch (e) {
+    print('Device info error: $e');
+  }
+
+  print('📱 ========== DEVICE INFO ==========');
+  info.forEach((key, value) => print('$key: $value'));
+  print('====================================');
+
+  return info;
+}
+
   Future<void> _submitAttendance() async {
     if (_emailController.text.trim().isEmpty ||
         _passwordController.text.isEmpty) {
@@ -260,16 +301,33 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
 
     final url = Uri.parse('$baseUrl/api/authenticate_user_for_attendance');
 
-    final payload = {
-      "email": _emailController.text.trim(),
-      "password": _passwordController.text,
-      "attendance_locationid": _selectedAttendanceLocationId ?? "",
-      "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
-      "remarks": _remarksController.text,
-      "gps_latitude": _currentPosition!.latitude.toString(),
-      "gps_longitude": _currentPosition!.longitude.toString(),
-      "address": _currentAddress,
-    };
+    // final payload = {
+    //   "email": _emailController.text.trim(),
+    //   "password": _passwordController.text,
+    //   "attendance_locationid": _selectedAttendanceLocationId ?? "",
+    //   "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
+    //   "remarks": _remarksController.text,
+    //   "gps_latitude": _currentPosition!.latitude.toString(),
+    //   "gps_longitude": _currentPosition!.longitude.toString(),
+    //   "address": _currentAddress,
+    // };
+    final deviceInfo = await _getDeviceInfo();
+
+final payload = {
+  "email": _emailController.text.trim(),
+  "password": _passwordController.text,
+  "attendance_locationid": _selectedAttendanceLocationId ?? "",
+  "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
+  "remarks": _remarksController.text,
+  "gps_latitude": _currentPosition!.latitude.toString(),
+  "gps_longitude": _currentPosition!.longitude.toString(),
+  "address": _currentAddress,
+  ...deviceInfo,
+};
+
+print('📤 ========== SUBMIT PAYLOAD ==========');
+payload.forEach((key, value) => print('$key: $value'));
+print('=======================================');
 
     try {
       final response = await http
@@ -894,6 +952,10 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
 // import 'package:url_launcher/url_launcher.dart';
 // import 'config.dart';
 // import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:device_info_plus/device_info_plus.dart';
+// import 'dart:io';
+
+
 // class SubmitAttendancePage extends StatefulWidget {
 //   const SubmitAttendancePage({super.key});
 
@@ -975,8 +1037,6 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
 //     // Debug prints
 //     print('❌ ========== CREDENTIALS CLEARED ==========');
 //     print('Remember Me: false');
-    
-    
   
    
 //   }
@@ -1202,6 +1262,45 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
 //     }
 //   }
 
+
+//   Future<Map<String, String>> _getDeviceInfo() async {
+//   final deviceInfo = DeviceInfoPlugin();
+//   Map<String, String> info = {};
+
+//   try {
+//     if (Platform.isAndroid) {
+//       final android = await deviceInfo.androidInfo;
+//       info = {
+//         'device_name':    android.model,
+//         'device_brand':   android.brand,
+//         'device_id':      android.id,
+//         'device_os':      'Android ${android.version.release}',
+//         'sdk_version':    android.version.sdkInt.toString(),
+//         'manufacturer':   android.manufacturer,
+//         'is_physical':    android.isPhysicalDevice.toString(),
+//       };
+//     } else if (Platform.isIOS) {
+//       final ios = await deviceInfo.iosInfo;
+//       info = {
+//         'device_name':    ios.name,
+//         'device_model':   ios.model,
+//         'device_id':      ios.identifierForVendor ?? 'unknown',
+//         'device_os':      'iOS ${ios.systemVersion}',
+//         'is_physical':    ios.isPhysicalDevice.toString(),
+//       };
+//     }
+//   } catch (e) {
+//     print('Device info error: $e');
+//   }
+
+//   // Print to terminal
+//   print('📱 ========== DEVICE INFO ==========');
+//   info.forEach((key, value) => print('$key: $value'));
+//   print('====================================');
+
+//   return info;
+// }
+
 //   Future<void> _submitAttendance() async {
 //     if (_emailController.text.trim().isEmpty ||
 //         _passwordController.text.isEmpty) {
@@ -1233,16 +1332,34 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
 
 //     final url = Uri.parse('$baseUrl/api/authenticate_user_for_attendance');
 
-//     final payload = {
-//       "email": _emailController.text.trim(),
-//       "password": _passwordController.text,
-//       "attendance_locationid": _selectedAttendanceLocationId ?? "",
-//       "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
-//       "remarks": _remarksController.text,
-//       "gps_latitude": _currentPosition!.latitude.toString(),
-//       "gps_longitude": _currentPosition!.longitude.toString(),
-//       "address": _currentAddress,
-//     };
+//     // final payload = {
+//     //   "email": _emailController.text.trim(),
+//     //   "password": _passwordController.text,
+//     //   "attendance_locationid": _selectedAttendanceLocationId ?? "",
+//     //   "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
+//     //   "remarks": _remarksController.text,
+//     //   "gps_latitude": _currentPosition!.latitude.toString(),
+//     //   "gps_longitude": _currentPosition!.longitude.toString(),
+//     //   "address": _currentAddress,
+//     // };
+
+// final deviceInfo = await _getDeviceInfo();
+
+// final payload = {
+//   "email": _emailController.text.trim(),
+//   "password": _passwordController.text,
+//   "attendance_locationid": _selectedAttendanceLocationId ?? "",
+//   "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
+//   "remarks": _remarksController.text,
+//   "gps_latitude": _currentPosition!.latitude.toString(),
+//   "gps_longitude": _currentPosition!.longitude.toString(),
+//   "address": _currentAddress,
+//   ...deviceInfo,
+// };
+
+// print('📤 ========== SUBMIT PAYLOAD ==========');
+// payload.forEach((key, value) => print('$key: $value'));
+// print('=======================================');
 
 //     try {
 //       final response = await http

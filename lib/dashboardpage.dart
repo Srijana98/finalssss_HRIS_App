@@ -23,6 +23,7 @@ import 'changepassword.dart';
 import 'workfromhistory.dart';
 import 'workonholidayhistory.dart';
 import 'workonweekendhistory.dart';
+import 'employeeinfo.dart';
 
 class DashboardPage extends StatefulWidget {
   final String? token;
@@ -97,7 +98,7 @@ class _DashboardPageState extends State<DashboardPage> {
 Padding(
   padding: const EdgeInsets.only(right: 10),
   child: PopupMenuButton<int>(
-    offset: const Offset(0, 50), // position below the icon
+    offset: const Offset(0, 50), 
     color: const Color(0xFF346CB0),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(6),
@@ -318,18 +319,28 @@ Stack(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CircleAvatar(
-            radius: 35,
-          //   backgroundImage: photoUrl.isNotEmpty
-          //       ? NetworkImage(photoUrl)
+          // CircleAvatar(
+          //   radius: 35,
+          // backgroundImage: photo.isNotEmpty
+          //       ? NetworkImage(photo)
           //       : const NetworkImage(
           //           'http://demo.smarthajiri.com/uploads/manipal/emp_img/505490192.jpg'),
           // ),
-          backgroundImage: photo.isNotEmpty
-                ? NetworkImage(photo)
-                : const NetworkImage(
-                    'http://demo.smarthajiri.com/uploads/manipal/emp_img/505490192.jpg'),
-          ),
+          GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => HRISApp()),
+    );
+  },
+  child: CircleAvatar(
+    radius: 35,
+    backgroundImage: photo.isNotEmpty
+        ? NetworkImage(photo)
+        : const NetworkImage(
+            'http://demo.smarthajiri.com/uploads/manipal/emp_img/505490192.jpg'),
+  ),
+),
           const SizedBox(width: 12),
           Expanded(
             child: Padding(
