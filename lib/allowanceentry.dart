@@ -96,91 +96,6 @@ class _AllowanceEntryPageState extends State<AllowanceEntryPage> {
   }
 }
 
-// Future<void> _submitAllowanceRequest() async {
-//   try {
-//     final prefs = await SharedPreferences.getInstance();
-//     final empId = prefs.getString('employee_id') ?? '';
-//     final orgId = prefs.getString('org_id') ?? '';
-//     final locationId = prefs.getString('location_id') ?? '';
-
-    
-//     final selectedAllowance = _allowanceTypes.firstWhere(
-//       (e) => e['inde_name'].toString() == _allowanceType,
-//       orElse: () => {},
-//     );
-//     final indeId = selectedAllowance['inde_id']?.toString() ?? '';
-
-//     final url = Uri.parse('$baseUrl/api/v1/allowanceRequest');
-
-   
-//     print("=== REQUEST HEADERS ===");
-//     print("empid: $empId");
-//     print("orgid: $orgId");
-//     print("locationid: $locationId");
-
-  
-//     final requestBody = {
-//       'inde_type': _allowanceType,
-//       'inde_id': indeId,
-//       'eff_year': _effectiveYear,
-//       'eff_month': _effectiveMonth,
-//       'amount': _allowanceAmountController.text,
-//       'remarks': _remarksController.text,
-//     };
-//     print("=== REQUEST BODY ===");
-//     print(jsonEncode(requestBody));
-
-//     final response = await http.post(
-//       url,
-//       headers: {
-//         'Content-Type': 'application/json',
-//         'empid': empId,
-//         'orgid': orgId,
-//         'locationid': locationId,
-//       },
-//       body: jsonEncode(requestBody),
-//     );
-
- 
-//     print("=== RESPONSE STATUS ===");
-//     print(response.statusCode);
-//     print("=== RESPONSE BODY ===");
-//     print(response.body);
-
-//     if (response.statusCode == 200) {
-//       final data = jsonDecode(response.body);
-
-//       // if (data['status'] == 'success') {
-//       //   ScaffoldMessenger.of(context).showSnackBar(
-//       //     const SnackBar(content: Text('Allowance request submitted successfully'), backgroundColor: Colors.green),
-//       //   );
-//       //   Navigator.pop(context);
-//       // } 
-
-//       if (data['status'] == 'success') {
-//        ScaffoldMessenger.of(context).showSnackBar(
-//         const SnackBar(content: Text('Allowance request submitted successfully'), backgroundColor: Colors.green),
-//          );
-  
-      
-//         Navigator.pushReplacement(
-//           context,
-//        MaterialPageRoute(builder: (context) =>  AllowanceHistoryPage()),
-//         );
-//         }
-      
-//       else {
-//         _showErrorMessage(data['message'] ?? 'Submission failed');
-//       }
-//     } else {
-//       _showErrorMessage('Server error: ${response.statusCode}');
-//     }
-//   } catch (e) {
-//     print("=== ERROR ===");
-//     print(e);
-//     _showErrorMessage('Error: $e');
-//   }
-// }
 
 Future<void> _submitAllowanceRequest() async {
   try {
@@ -339,6 +254,7 @@ Future<void> _submitAllowanceRequest() async {
                       ),
                     ),
                     _buildRow(
+                     
                       'Effective Year:',
                       _buildDropdownField(
                         items: _years.map((e) => e['year'].toString()).toList(),

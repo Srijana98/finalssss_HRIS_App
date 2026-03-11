@@ -31,11 +31,11 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
 
   List<PlatformFile> _attachments = [];
 
-  // Holiday API Data
+
   List<Holiday> _holidays = [];
   Holiday? _selectedHoliday;
   
-  // Store holiday_id from existing data
+
   String? _prefilledHolidayId;
   bool _isEditMode = false;
 
@@ -46,15 +46,14 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
     _toDateController = TextEditingController();
     _purposeController = TextEditingController();
 
-    // Check if we're in edit mode
+   
     if (widget.existingData != null) {
       _isEditMode = true;
       
       print('🔍 ====== EXISTING DATA CHECK ======');
       print('📋 Full existingData: ${widget.existingData}');
       print('📋 Keys in existingData: ${widget.existingData!.keys.toList()}');
-      
-      // Try multiple possible key names
+   
       _prefilledHolidayId = widget.existingData!['holiday_id']?.toString() ?? 
                            widget.existingData!['holidayId']?.toString() ??
                            widget.existingData!['holidayid']?.toString();
@@ -64,8 +63,6 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
       
       _loadExistingData();
     }
-
-    // Fetch holidays from API
     _fetchHolidays();
   }
 
@@ -139,13 +136,13 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
           setState(() {
             _holidays = holidaysJson.map((e) => Holiday.fromJson(e)).toList();
             
-            // Debug: Print all holiday IDs
+           
             print('🔍 Available Holiday IDs:');
             for (var h in _holidays) {
               print('   ID: ${h.id}, Name: ${h.eventname}, Dates: ${h.startDateBS} to ${h.endDateBS}');
             }
             
-            // ✅ SOLUTION: Since API doesn't return holiday_id, match by dates!
+          
             if (_isEditMode && _holidays.isNotEmpty) {
               final fromDate = _fromDateController.text.trim();
               final toDate = _toDateController.text.trim();
@@ -155,7 +152,7 @@ class _WorkonHolidayEntryPageState extends State<WorkonHolidayEntryPage> {
               
               if (fromDate.isNotEmpty && toDate.isNotEmpty) {
                 try {
-                  // Try to find holiday that matches the date range
+              
                   _selectedHoliday = _holidays.firstWhere(
                     (h) => h.startDateBS == fromDate && h.endDateBS == toDate,
                   );

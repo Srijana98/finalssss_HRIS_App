@@ -83,7 +83,7 @@ void initState() {
   _selectedType = 'Check In';
   _loadUserData();
 
-  // Prefill if existingData is provided
+ 
   if (widget.existingData != null) {
     final data = widget.existingData!;
     _recordId = data['id']?.toString(); 
@@ -161,7 +161,7 @@ void initState() {
       initialTime: TimeOfDay.now(),
     );
     if (pickedTime != null) {
-      // Convert to 24-hour format HH:mm
+
       final hour = pickedTime.hour.toString().padLeft(2, '0');
       final minute = pickedTime.minute.toString().padLeft(2, '0');
       controller.text = '$hour:$minute';
@@ -313,17 +313,17 @@ Future<void> _submitForm() async {
   setState(() => _isSubmitting = true);
 
   try {
-    // 🔹 Determine attendance type
+
     String attType = _selectedType == 'Check In'
         ? 'CHECKIN'
         : _selectedType == 'Check Out'
             ? 'CHECKOUT'
             : 'BOTH';
 
-    // 🔹 Determine date type
+  
     String dateType = _fromIsBS ? 'NP' : 'EN';
 
-    // 🔹 API headers
+  
     final headers = {
       'Content-Type': 'application/json',
       'empid': _empId,
@@ -332,7 +332,7 @@ Future<void> _submitForm() async {
       'date_type': dateType,
     };
 
-    // 🔹 API body
+   
     final Map<String, dynamic> body = {
       'att_type': attType,
       'cur_date': [_DateController.text.trim()],
@@ -340,7 +340,7 @@ Future<void> _submitForm() async {
     };
 
 
-    // 🔹 Conditionally include times
+   
     if (attType == 'CHECKIN' || attType == 'BOTH') {
       body['cur_checkin_time'] = [_checkInTimeController.text.trim()];
     }
@@ -351,13 +351,13 @@ Future<void> _submitForm() async {
      if (_recordId != null && _recordId!.isNotEmpty) {
   body['id'] = _recordId;
 }
-    // 🔹 Debug prints
+
     print('--- Request Headers ---');
     headers.forEach((key, value) => print('$key: $value'));
     print('--- Request Body ---');
     print(jsonEncode(body));
 
-    // 🔹 API call
+  
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/save_manual_attendance'),
       headers: headers,

@@ -101,7 +101,7 @@ Future<void> fetchWorkFromHomeHistory() async {
   });
 
   try {
-    // 1️⃣ Retrieve employee info
+  
     SharedPreferences prefs = await SharedPreferences.getInstance();
     
 
@@ -116,7 +116,7 @@ Future<void> fetchWorkFromHomeHistory() async {
       throw Exception("Missing employee information. Please log in again.");
     }
 
-    // 2️⃣ Prepare URL and headers
+  
     final url = Uri.parse('$baseUrl/api/v1/work_from_home?entry_type=WORKFROMHOME');
     final headers = {
       'empid': empid,
@@ -127,26 +127,24 @@ Future<void> fetchWorkFromHomeHistory() async {
     debugPrint('🌐 Request URL: $url');
     debugPrint('📦 Request Headers: $headers');
 
-    // 3️⃣ Make the GET request — 🔥 PLACE YOUR LINES HERE
+  
     debugPrint('🔹 Sending GET request...');
     final response = await http.get(url, headers: headers);
     debugPrint('🔹 API call completed.');
 
-    // 4️⃣ Log the response
     debugPrint('📥 Response Status Code: ${response.statusCode}');
     debugPrint('📄 Response Body: ${response.body}');
 
-    // 5️⃣ Handle successful response
+ 
     if (response.statusCode == 200) {
       try {
         final data = jsonDecode(response.body);
         debugPrint('✅ JSON decoded successfully');
 
         if (data['status'] == 'success') {
-          // Optional: log the structure so you can inspect it
           debugPrint('🧩 Keys in statusWiseHistory: ${data['data']['statusWiseHistory'].keys}');
 
-          // Parse JSON properly here depending on backend format
+        
           final Map<String, dynamic> rawHistory = data['data']['statusWiseHistory'];
 
           final Map<String, List< WorkFromHomeHistoryModel>> parsedHistory = {};
@@ -210,7 +208,7 @@ Future<void> cancelWorkFromHomeRequest(String id, int index) async {
       final data = jsonDecode(response.body);
 
       if (data['status'] == 'success') {
-        // Remove locally from pending list
+  
         setState(() {
           statusWiseHistory['Pending']?.removeAt(index);
         });
@@ -222,7 +220,7 @@ Future<void> cancelWorkFromHomeRequest(String id, int index) async {
           ),
         );
 
-        // Refresh API data
+     
         fetchWorkFromHomeHistory();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -336,7 +334,7 @@ Builder(
     String fromDate = item.fromDateBs ?? '';
     String toDate = item.toDateBs ?? '';
 
-    // Try to calculate number of days
+   
     int daysCount = 0;
     try {
       if (fromDate.isNotEmpty && toDate.isNotEmpty) {
@@ -345,7 +343,6 @@ Builder(
         daysCount = end.difference(start).inDays + 1;
       }
     } catch (e) {
-      // just ignore parse errors
     }
 
     return Text(
@@ -361,7 +358,7 @@ Builder(
 
           const SizedBox(height: 8),
 
-          // Show buttons only in Pending tab
+  
           if (tab == 'Pending')
             Row(
               mainAxisAlignment: MainAxisAlignment.end,

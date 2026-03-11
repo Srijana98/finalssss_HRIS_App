@@ -49,12 +49,11 @@ void initState() {
 if (widget.existingData != null) {
   final data = widget.existingData!;
 
-  // Prefill Purpose
+
   _purposeController.text = data['purpose'] ?? '';
    recordId = data['id'] != null ? int.tryParse(data['id'].toString()) : null;
 
 
-  // Prefill Dates based on date_type
   final dateType = data['date_type'] ?? 'NP'; 
 
   if (dateType == 'EN') {
@@ -80,7 +79,7 @@ if (widget.existingData != null) {
     super.dispose();
   }
 
-  // Date Picker (BS/AD)
+ 
   Future<void> _selectDate(TextEditingController controller, bool isFrom) async {
     final isBS = isFrom ? _fromIsBS : _toIsBS;
 
@@ -116,7 +115,7 @@ if (widget.existingData != null) {
   }
 }
 
-  // Reusable Row
+
   Widget _buildRow(String label, Widget field) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 6),
@@ -351,7 +350,7 @@ Widget _buildAttachmentField() {
       ));
     }
   } catch (e) {
-    print('❌ ERROR during request: $e'); // also log error in console
+    print('❌ ERROR during request: $e'); 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Error: $e'),
       backgroundColor: Colors.red,

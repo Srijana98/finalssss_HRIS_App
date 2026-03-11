@@ -80,8 +80,6 @@ class _OvertimeEntryPageState extends State<OvertimeEntryPage> {
 
   final Color _customBlue = const Color(0xFF346CB0);
   bool _isSubmitting = false;
-
-  // Track BS / AD selection
   bool _startIsBS = true;
   bool _endIsBS = true;
   int? _id;
@@ -132,7 +130,7 @@ if (widget.existingData != null) {
     super.dispose();
   }
 
-  // ------------------ DATE PICKER (AD + BS) ------------------
+  
   Future<void> _selectDate(TextEditingController controller, bool isStartDate) async {
     final bool isBS = isStartDate ? _startIsBS : _endIsBS;
 
@@ -167,11 +165,11 @@ if (widget.existingData != null) {
     }
   }
 
-  // ------------------ TIME PICKER ------------------
+  
   String _formatTimeForDisplay(TimeOfDay time) {
     final hour = time.hour.toString().padLeft(2, '0');
     final minute = time.minute.toString().padLeft(2, '0');
-    return '$hour:$minute:00'; // HH:mm:ss
+    return '$hour:$minute:00'; 
   }
 
   Future<void> _selectTime(TextEditingController controller) async {
@@ -187,7 +185,7 @@ if (widget.existingData != null) {
 
 
  
-  // ------------------ TOTAL HOURS CALCULATION ------------------
+  
 void _calculateTotalHours() {
   if (_startDateController.text.isEmpty ||
       _startTimeController.text.isEmpty ||
@@ -239,7 +237,7 @@ String _getDateType() {
 }
 
 
-  // ------------------ FORM SUBMISSION ------------------
+
 Future<void> _submitForm() async {
   if (_startDateController.text.isEmpty ||
       _startTimeController.text.isEmpty ||
@@ -289,12 +287,12 @@ print("empId: $empId");
 print("orgId: $orgId");
 print("locationid: $locationId");
 
-// ✅ EXISTING DEBUG PRINTS
+
 print("========== OVERTIME REQUEST DEBUG ==========");
 print("Request URL: $url");
 print("Headers: {empid: $empId, orgid: $orgId, locationid: $locationId}");
 print("Request Body: ${jsonEncode(body)}");
-print("============================================");
+
 
 
 
@@ -335,7 +333,6 @@ print("============================================");
         );
 
 
-        // Create OvertimeRequest object for local use
 final newRequest = OvertimeRequest(
   startDate: _startDateController.text,
   endDate: _endDateController.text,
@@ -346,7 +343,7 @@ final newRequest = OvertimeRequest(
 
 
 
-// // ✅ Directly go back to the history page after success
+
 Navigator.pushReplacement(
   context,
   MaterialPageRoute(builder: (_) => const OverTimeHistoryPage()),
@@ -500,7 +497,7 @@ Navigator.pushReplacement(
     );
   }
 
-  // ------------------ BUILD ------------------
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -20,7 +20,7 @@ class _SubstituteHistoryPageState extends State<SubstituteHistoryPage> {
   bool _isLoading = true;
   Map<String, dynamic>? _apiData;
   
-  // Lists for all tabs
+
   List<dynamic> _pendingLeaves = [];
   List<dynamic> _reviewLeaves = [];
   List<dynamic> _approvedLeaves = [];

@@ -330,7 +330,8 @@ Stack(
   onTap: () {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => HRISApp()),
+     // MaterialPageRoute(builder: (_) => HRISApp()),
+       MaterialPageRoute(builder: (_) => const EmployeeProfilePage()),
     );
   },
   child: CircleAvatar(

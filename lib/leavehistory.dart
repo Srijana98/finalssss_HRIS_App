@@ -240,7 +240,6 @@ Future<void> fetchLeaveHistory() async {
         }
       }
     } else if (response.statusCode == 401) {
-      // ✅ Handle unauthorized access
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Unauthorized. Please login again.")),

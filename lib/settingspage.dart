@@ -109,7 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
       ),
       IconButton(
-        padding: EdgeInsets.zero, // 🔹 icon space reduce
+        padding: EdgeInsets.zero, 
         constraints: const BoxConstraints(),
         icon: Icon(
           passwordVisible
@@ -131,18 +131,18 @@ class _SettingsPageState extends State<SettingsPage> {
 
             const SizedBox(height: 24),
 
-            // Enable Button (without snackbar)
+            
             Align(
               alignment: Alignment.center,
               
 
               child: ElevatedButton(
   onPressed: () {
-    // No snackbar logic
+    
   },
   style: ElevatedButton.styleFrom(
     backgroundColor: const Color(0xFF346CB0),
-    minimumSize: const Size(120, 36), // ✅ smaller button
+    minimumSize: const Size(120, 36), 
     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(30),
@@ -178,16 +178,6 @@ class _SettingsPageState extends State<SettingsPage> {
     IconButton(
   icon: const Icon(Icons.refresh, color: Colors.green),
    onPressed: () {
-  //   ScaffoldMessenger.of(context).showSnackBar(
-  //     SnackBar(
-  //       content: const Text(
-  //         'App refreshed!',
-  //         style: TextStyle(color: Colors.white), // ✅ White text
-  //       ),
-  //       backgroundColor: const Color(0xFF346CB0), // ✅ Custom background color
-  //       duration: const Duration(seconds: 2),
-  //     ),
-  //   );
   },
 ),
 

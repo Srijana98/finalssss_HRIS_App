@@ -70,8 +70,7 @@ void _prefillDataIfExists() {
       print("====== PROCESSING SUBSTITUTE ======");
       print("Full substitute data: ${jsonEncode(substitute)}");
       
-      
-      // Parse duty date (substitute_datebs)
+    
       if (substitute['substitute_datebs'] != null) {
         try {
           String dateStr = substitute['substitute_datebs'].toString();
@@ -489,7 +488,7 @@ Future<void> _saveSubstituteLeave() async {
       }
       leaveDates.add(formattedLeaveDate);
 
-      // Add other data
+   
       detailIds.add(0);  
       attendStatuses.add("true");  
       otStatuses.add("false");     
@@ -500,7 +499,7 @@ Future<void> _saveSubstituteLeave() async {
           : entry.remarksController.text.trim());
     }
 
-    // Prepare request body
+ 
     final requestBody = {
       "sdate": sdate,
       "tdays": totalDays,
@@ -527,7 +526,6 @@ Future<void> _saveSubstituteLeave() async {
     print("  locationid: $locationId");
     print("Body: ${jsonEncode(requestBody)}");
 
-    // Make API call
     final response = await http.post(
       Uri.parse('$baseUrl/api/v1/save_substitute_leave_deposit'),
       headers: {
@@ -1010,7 +1008,6 @@ if (response.statusCode == 200) {
                             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           ),
                           onPressed: () {
-                            // Re-verify all duty dates
                             for (var entry in leaveEntries) {
                               if (entry.dutyDate != null) {
                                 _checkDutyDateAPIs(entry, entry.dutyDate, entry.dutyIsBS);
@@ -1035,7 +1032,6 @@ if (response.statusCode == 200) {
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         ),
                         onPressed: () async {
-                          // Check rejections for all duty dates
                           setState(() => _isLoading = true);
                           for (var entry in leaveEntries) {
                             if (entry.dutyDate != null) {
@@ -1151,7 +1147,7 @@ class LeaveEntry {
   bool leaveIsBS = true;
   TextEditingController remarksController = TextEditingController();
   
-  // Combined API response
+
   String? apiResponseMessage;
   bool hasError = false;
 }

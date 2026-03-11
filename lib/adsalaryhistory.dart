@@ -8,8 +8,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'config.dart'; 
 import 'dart:convert';
 
-
-
 class AdvanceSalaryRequest {
   final String id;
   final String advace_amount;
@@ -93,7 +91,7 @@ Map<String, List<AdvanceSalaryRequest>> historyData = {
   };
 
 
-  // @override
+  
   void initState() {
     super.initState();
     if (widget.AdsalaryData != null) {
@@ -115,7 +113,6 @@ void parseHistoryData(Map<String, dynamic> data) {
 
   if (statusWiseHistory is Map) {
     statusWiseHistory.forEach((key, value) {
-      // Ensure key is string and value is list
       final safeKey = key.toString();
       if (value is List) {
         parsedData[safeKey] = value
@@ -592,7 +589,6 @@ if (request.deduct_type.toUpperCase() == 'MONTHLY' &&
                                 ),
                               ),
                               onPressed: () {
-                                // Add filter logic if needed
                               },
                               child: const Text(
                                 'Filter',

@@ -379,7 +379,7 @@ class _OverTimeHistoryPageState extends State<OverTimeHistoryPage> {
                                       ),
                                       
                                       onPressed: () async {
-                                        Navigator.pop(context); // close popup first
+                                        Navigator.pop(context); 
               
               if (request.id != null) {
                await cancelOvertimeRequest(int.parse(request.id), index);

@@ -208,7 +208,7 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
           _isLoadingLocation = false;
         });
 
-        // Move map to current location if map is visible
+      
         if (_showMap && _currentPosition != null) {
           if (mounted) {
             _mapController.move(
@@ -300,17 +300,6 @@ class _SubmitAttendancePageState extends State<SubmitAttendancePage> {
     });
 
     final url = Uri.parse('$baseUrl/api/authenticate_user_for_attendance');
-
-    // final payload = {
-    //   "email": _emailController.text.trim(),
-    //   "password": _passwordController.text,
-    //   "attendance_locationid": _selectedAttendanceLocationId ?? "",
-    //   "att_type": _attendanceType == 'check_in' ? "CHECKIN" : "CHECKOUT",
-    //   "remarks": _remarksController.text,
-    //   "gps_latitude": _currentPosition!.latitude.toString(),
-    //   "gps_longitude": _currentPosition!.longitude.toString(),
-    //   "address": _currentAddress,
-    // };
     final deviceInfo = await _getDeviceInfo();
 
 final payload = {

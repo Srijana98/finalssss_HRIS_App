@@ -195,18 +195,11 @@ if (response.statusCode == 200 || response.statusCode == 201) {
     );
   }
 }
-
-
-
   String? _selectedDeductType;
   String? _selectedStartYear;
   String? _selectedStartMonth;
- 
-
-  List<Map<String, dynamic>> _installmentSchedule = [];
-
-
-  final Color _customBlue = const Color(0xFF346CB0);
+ List<Map<String, dynamic>> _installmentSchedule = [];
+final Color _customBlue = const Color(0xFF346CB0);
 
   @override
   void dispose() {
@@ -336,8 +329,6 @@ void _generateInstallmentSchedule() {
 _calculateRemainingAmount(); 
 
 }
-
-
 InputDecoration _underlineInputDecoration({String? hint, Widget? suffixIcon}) {
   return InputDecoration(
     hintText: hint,

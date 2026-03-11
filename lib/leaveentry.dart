@@ -152,15 +152,15 @@ void _prefillFormData() {
 
 
     
-    // ✅ FIXED: Substitute employee - handle both string and int
+    
 if (data['substitute_employee_id'] != null) {
   final rawId = data['substitute_employee_id'].toString();
   
-  // Skip if it's empty or "null" string
+  
   if (rawId != 'null' && rawId.isNotEmpty && rawId != '0') {
     _selectedSubstitute = rawId;
     
-    // ✅ Verify the substitute exists in the list
+    
     final exists = substitutes.any((s) => s['id'].toString() == rawId);
     
     if (!exists) {
@@ -182,7 +182,7 @@ if (data['substitute_employee_id'] != null) {
       _pickedFileName = data['attachment'].toString().split('/').last;
     }
 
-    // ✅ FIXED: Pre-select leave categories
+   
     if (data['leave_categories'] != null && data['leave_categories'] is List) {
       final categories = data['leave_categories'] as List;
       
@@ -195,7 +195,7 @@ if (data['substitute_employee_id'] != null) {
         
         print("🔹 Looking for category: $categoryName with days: $days");
         
-        // Find matching category ID from leaveQuota
+    
         for (var quota in leaveQuota) {
           final rawId = quota['leave_catid'];
           final id = (rawId is List) ? rawId.first.toString() : rawId.toString();

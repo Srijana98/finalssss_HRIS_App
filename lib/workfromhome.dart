@@ -48,12 +48,12 @@ void initState() {
 if (widget.existingData != null) {
   final data = widget.existingData!;
 
-  // Prefill Purpose
+
 
   _purposeController.text = data['purpose'] ?? '';
   recordId = data['id'] != null ? int.tryParse(data['id'].toString()) : null;
 
-  // Prefill Dates based on date_type
+
   final dateType = data['date_type'] ?? 'NP'; 
 
   if (dateType == 'EN') {
@@ -80,7 +80,7 @@ if (widget.existingData != null) {
     super.dispose();
   }
 
-  // Date Picker (BS/AD)
+  
   Future<void> _selectDate(TextEditingController controller, bool isFrom) async {
     final isBS = isFrom ? _fromIsBS : _toIsBS;
 
@@ -303,7 +303,7 @@ if (widget.existingData != null) {
     request.fields['to_date'] = _toDateController.text.trim();
     request.fields['purpose'] = _purposeController.text.trim();
 
-    // Add this for edit/update
+ 
    if (recordId != null) {
   request.fields['id'] = recordId.toString();
    }
@@ -311,13 +311,13 @@ if (widget.existingData != null) {
 
     if (_attachments.isNotEmpty && _attachments.first.path != null) {
   request.files.add(await http.MultipartFile.fromPath(
-    'attachment', // ✅ remove the []
+    'attachment', 
     _attachments.first.path!,
   ));
 }
 
 
-    // 🧾 Log all outgoing request details
+ 
     print('📡 ====== API REQUEST ======');
     print('➡️ URL: $url');
     print('🧩 Headers: ${request.headers}');
@@ -329,7 +329,6 @@ if (widget.existingData != null) {
     var responseBody = await response.stream.bytesToString();
     final result = json.decode(responseBody);
 
-    // 🧾 Log the full response
     print('✅ ====== API RESPONSE ======');
     print('🔢 Status Code: ${response.statusCode}');
     print('💬 Response Body: $responseBody');
@@ -349,7 +348,7 @@ if (widget.existingData != null) {
       ));
     }
   } catch (e) {
-    print('❌ ERROR during request: $e'); // also log error in console
+    print('❌ ERROR during request: $e'); 
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text('Error: $e'),
       backgroundColor: Colors.red,
