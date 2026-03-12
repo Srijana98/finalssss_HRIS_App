@@ -46,6 +46,8 @@ flutter:
 
   assets:
     - assets/xelwel logo1.png
+    - assets/gwt logo.jpg
+    - assets/medibiz logo.jpg
 
 flutter_icons:
   android: true

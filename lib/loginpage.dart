@@ -424,308 +424,6 @@ class CurvedPainter extends CustomPainter {
 
 
 
-
-
-
-
-// login page for the gwt
-
-// import 'dart:convert';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
-// import 'package:shared_preferences/shared_preferences.dart';
-// import 'package:webview_flutter/webview_flutter.dart';
-// import 'dashboardpage.dart';
-// import 'submitattendancepage.dart';
-// import 'config.dart';
-
-// void main() {
-//   runApp(const MaterialApp(
-//     debugShowCheckedModeBanner: false,
-//     home: LoginScreen(),
-//   ));
-// }
-
-// class LoginScreen extends StatefulWidget {
-//   const LoginScreen({super.key});
-
-//   @override
-//   State<LoginScreen> createState() => _LoginScreenState();
-// }
-
-// class _LoginScreenState extends State<LoginScreen> {
-//   bool _isLoading = false;
-
-//   Future<void> _login() async {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//         builder: (context) => const WebViewPage(url: 'https://gwt.xelwel.com'),
-//       ),
-//     );
-//   }
-
-  
-
-//   void _showMessage(String message, {bool isError = false}) {
-//     ScaffoldMessenger.of(context).showSnackBar(
-//       SnackBar(
-//         content: Text(message),
-//         backgroundColor: isError ? Colors.red : Colors.green,
-//         duration: const Duration(seconds: 2),
-//       ),
-//     );
-//   }
-
-//   void _navigateToAttendancePage() {
-//     Navigator.push(
-//       context,
-//       MaterialPageRoute(
-//           builder: (context) => const SubmitAttendancePage()),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.white,
-//       body: SafeArea(
-//         child: LayoutBuilder(
-//           builder: (context, constraints) {
-//             return Stack(
-//               children: [
-//                 // 1. CURVED BACKGROUND
-//                 CustomPaint(
-//                   size: Size(
-//                     constraints.maxWidth,
-//                     constraints.maxHeight * 0.30,
-//                   ),
-//                   painter: CurvedPainter(),
-//                 ),
-
-//                 // 2. MAIN BODY (SCROLL VIEW)
-//                 SingleChildScrollView(
-//                   child: Padding(
-//                     padding: const EdgeInsets.symmetric(horizontal: 32),
-//                     child: Column(
-//                       children: [
-//                         SizedBox(height: constraints.maxHeight * 0.32),
-
-//                         const Center(
-//                           child: Text(
-//                             'Xelwel HRMS',
-//                             style: TextStyle(
-//                               fontSize: 20,
-//                               fontWeight: FontWeight.bold,
-//                               color: Color(0xFF346CB0),
-//                             ),
-//                           ),
-//                         ),
-
-//                         const SizedBox(height: 100),
-
-//                         Align(
-//                           alignment: Alignment.center,
-//                           child: Container(
-//                             width: double.infinity,
-//                             padding: const EdgeInsets.all(20),
-//                             decoration: BoxDecoration(
-//                               color: Colors.grey.shade50,
-//                               borderRadius: BorderRadius.circular(20),
-//                               boxShadow: const [
-//                                 BoxShadow(
-//                                   color: Colors.black12,
-//                                   blurRadius: 10,
-//                                   spreadRadius: 2,
-//                                 ),
-//                               ],
-//                             ),
-//                             child: Column(
-//                               crossAxisAlignment: CrossAxisAlignment.center,
-//                               children: [
-//                                 const SizedBox(height: 20),
-
-//                                 // LOGIN BUTTON
-//                                 ElevatedButton(
-//                                   onPressed: _isLoading ? null : _login,
-//                                   style: ElevatedButton.styleFrom(
-//                                     backgroundColor: const Color(0xFF346CB0),
-//                                     shape: RoundedRectangleBorder(
-//                                       borderRadius: BorderRadius.circular(10),
-//                                     ),
-//                                     padding: const EdgeInsets.symmetric(
-//                                       horizontal: 15,
-//                                       vertical: 8,
-//                                     ),
-//                                     minimumSize: const Size(130, 25),
-//                                   ),
-//                                   child: _isLoading
-//                                       ? const CircularProgressIndicator(
-//                                           color: Colors.white)
-//                                       : const Text(
-//                                           'Log In',
-//                                           style: TextStyle(
-//                                             color: Colors.white,
-//                                             fontSize: 15,
-//                                             fontWeight: FontWeight.w600,
-//                                           ),
-//                                         ),
-//                                 ),
-
-//                                 const SizedBox(height: 20),
-
-//                                 // SUBMIT ATTENDANCE BUTTON
-//                                 ElevatedButton(
-//                                   onPressed: _navigateToAttendancePage,
-//                                   style: ElevatedButton.styleFrom(
-//                                     backgroundColor: Colors.green,
-//                                     shape: RoundedRectangleBorder(
-//                                       borderRadius: BorderRadius.circular(10),
-//                                     ),
-//                                     padding: const EdgeInsets.symmetric(
-//                                       horizontal: 18,
-//                                       vertical: 6,
-//                                     ),
-//                                     minimumSize: const Size(170, 25),
-//                                   ),
-//                                   child: const Text(
-//                                     'Submit Attendance',
-//                                     style: TextStyle(
-//                                       color: Colors.white,
-//                                       fontSize: 15,
-//                                       fontWeight: FontWeight.w600,
-//                                     ),
-//                                   ),
-//                                 ),
-//                               ],
-//                             ),
-//                           ),
-//                         ),
-
-//                         const SizedBox(height: 50),
-//                       ],
-//                     ),
-//                   ),
-//                 ),
-
-//                 Positioned(
-//                   top: (constraints.maxHeight * 0.40) / 2 - 90,
-//                   left: 0,
-//                   right: 0,
-//                   child: Center(
-//                     child: CircleAvatar(
-//                       radius: 65,
-//                       backgroundColor: Colors.white,
-//                       child: ClipRRect(
-//                         borderRadius: BorderRadius.circular(65),
-//                         child: Image.asset(
-//                           'assets/xelwel logo.png',
-//                           width: 105,
-//                           height: 105,
-//                           fit: BoxFit.cover,
-//                         ),
-//                       ),
-//                     ),
-//                   ),
-//                 ),
-//               ],
-//             );
-//           },
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-// class CurvedPainter extends CustomPainter {
-//   @override
-//   void paint(Canvas canvas, Size size) {
-//     Paint paint = Paint()
-//       ..color = const Color(0xFF346CB0)
-//       ..style = PaintingStyle.fill;
-
-//     Path path = Path();
-//     path.lineTo(0, size.height - 50);
-//     path.quadraticBezierTo(
-//       size.width * 0.5,
-//       size.height + 20,
-//       size.width,
-//       size.height - 50,
-//     );
-//     path.lineTo(size.width, 0);
-//     path.close();
-
-//     canvas.drawPath(path, paint);
-//   }
-
-//   @override
-//   bool shouldRepaint(CustomPainter oldDelegate) => false;
-// }
-
-// // WebView Page
-// class WebViewPage extends StatefulWidget {
-//   final String url;
-
-//   const WebViewPage({super.key, required this.url});
-
-//   @override
-//   State<WebViewPage> createState() => _WebViewPageState();
-// }
-
-// class _WebViewPageState extends State<WebViewPage> {
-//   late final WebViewController _controller;
-//   bool _isLoading = true;
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _controller = WebViewController()
-//       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-//       ..setNavigationDelegate(
-//         NavigationDelegate(
-//           onPageStarted: (String url) {
-//             setState(() {
-//               _isLoading = true;
-//             });
-//           },
-//           onPageFinished: (String url) {
-//             setState(() {
-//               _isLoading = false;
-//             });
-//           },
-//         ),
-//       )
-//       ..loadRequest(Uri.parse(widget.url));
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: SafeArea(
-//         child: Stack(
-//           children: [
-//             WebViewWidget(controller: _controller),
-//             if (_isLoading)
-//               const Center(
-//                 child: CircularProgressIndicator(
-//                   color: Color(0xFF346CB0),
-//                 ),
-//               ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }
-
-
-
-
-
-
-
-
-
 //loginpage.dart of the gwt with the checkbox
 // import 'dart:convert';
 // import 'package:flutter/material.dart';
@@ -792,7 +490,7 @@ class CurvedPainter extends CustomPainter {
 //           builder: (context, constraints) {
 //             return Stack(
 //               children: [
-//                 // 1. CURVED BACKGROUND
+               
 //                 CustomPaint(
 //                   size: Size(
 //                     constraints.maxWidth,
@@ -801,7 +499,7 @@ class CurvedPainter extends CustomPainter {
 //                   painter: CurvedPainter(),
 //                 ),
 
-//                 // 2. MAIN BODY (SCROLL VIEW)
+              
 //                 SingleChildScrollView(
 //                   child: Padding(
 //                     padding: const EdgeInsets.symmetric(horizontal: 32),
@@ -909,15 +607,271 @@ class CurvedPainter extends CustomPainter {
 //                   left: 0,
 //                   right: 0,
 //                   child: Center(
-//                     child: CircleAvatar(
-//                       radius: 65,
-//                       backgroundColor: Colors.white,
-//                       child: ClipRRect(
-//                         borderRadius: BorderRadius.circular(65),
+                    
+//                     child: Container(
+//   width: 130,
+//   height: 130,
+//   decoration: BoxDecoration(
+//     color: Colors.white,
+//     borderRadius: BorderRadius.circular(16), 
+//     boxShadow: [
+//       BoxShadow(
+//         color: Colors.black26,
+//         blurRadius: 8,
+//         spreadRadius: 2,
+//       ),
+//     ],
+//   ),
+//   child: ClipRRect(
+//     borderRadius: BorderRadius.circular(16),
+//     child: Image.asset(
+//       'assets/gwt logo.jpg',
+//       width: 130,
+//       height: 130,
+//       fit: BoxFit.cover,
+//     ),
+//   ),
+// ),
+//                   ),
+//                 ),
+//               ],
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
+
+// class CurvedPainter extends CustomPainter {
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     Paint paint = Paint()
+//       ..color = const Color(0xFF346CB0)
+//       ..style = PaintingStyle.fill;
+
+//     Path path = Path();
+//     path.lineTo(0, size.height - 50);
+//     path.quadraticBezierTo(
+//       size.width * 0.5,
+//       size.height + 20,
+//       size.width,
+//       size.height - 50,
+//     );
+//     path.lineTo(size.width, 0);
+//     path.close();
+
+//     canvas.drawPath(path, paint);
+//   }
+
+//   @override
+//   bool shouldRepaint(CustomPainter oldDelegate) => false;
+// }
+
+
+
+
+
+
+
+
+
+
+
+ //login page for the medibiz
+// import 'package:flutter/material.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'submitattendancepage.dart';
+
+// void main() {
+//   runApp(const MaterialApp(
+//     debugShowCheckedModeBanner: false,
+//     home: LoginScreen(),
+//   ));
+// }
+
+// class LoginScreen extends StatefulWidget {
+//   const LoginScreen({super.key});
+
+//   @override
+//   State<LoginScreen> createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen> {
+//   Future<void> _login() async {
+//     final Uri url = Uri.parse('https://medibiz.xelwel.com/');
+
+//     try {
+//       await launchUrl(
+//         url,
+//         mode: LaunchMode.externalApplication,
+//       );
+//     } catch (e) {
+//       _showMessage('the browser should be opened: ${e.toString()}', isError: true);
+//     }
+//   }
+
+//   void _showMessage(String message, {bool isError = false}) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(message),
+//         backgroundColor: isError ? Colors.red : Colors.green,
+//         duration: const Duration(seconds: 2),
+//       ),
+//     );
+//   }
+
+//   void _navigateToAttendancePage() {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//           builder: (context) => const SubmitAttendancePage()),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SafeArea(
+//         child: LayoutBuilder(
+//           builder: (context, constraints) {
+//             return Stack(
+//               children: [
+//                 CustomPaint(
+//                   size: Size(
+//                     constraints.maxWidth,
+//                     constraints.maxHeight * 0.30,
+//                   ),
+//                   painter: CurvedPainter(),
+//                 ),
+
+//                 SingleChildScrollView(
+//                   child: Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 32),
+//                     child: Column(
+//                       children: [
+//                         SizedBox(height: constraints.maxHeight * 0.32),
+
+//                         const Center(
+//                           child: Text(
+//                             'Medibiz HRMS',
+//                             style: TextStyle(
+//                               fontSize: 20,
+//                               fontWeight: FontWeight.bold,
+//                               color: Color(0xFF346CB0),
+//                             ),
+//                           ),
+//                         ),
+
+//                         const SizedBox(height: 100),
+
+//                         Align(
+//                           alignment: Alignment.center,
+//                           child: Container(
+//                             width: double.infinity,
+//                             padding: const EdgeInsets.all(20),
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey.shade50,
+//                               borderRadius: BorderRadius.circular(20),
+//                               boxShadow: const [
+//                                 BoxShadow(
+//                                   color: Colors.black12,
+//                                   blurRadius: 10,
+//                                   spreadRadius: 2,
+//                                 ),
+//                               ],
+//                             ),
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.center,
+//                               children: [
+//                                 const SizedBox(height: 20),
+
+//                                 // LOGIN BUTTON
+//                                 ElevatedButton(
+//                                   onPressed: _login,
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: const Color(0xFF346CB0),
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     padding: const EdgeInsets.symmetric(
+//                                       horizontal: 15,
+//                                       vertical: 8,
+//                                     ),
+//                                     minimumSize: const Size(130, 25),
+//                                   ),
+//                                   child: const Text(
+//                                     'Log In',
+//                                     style: TextStyle(
+//                                       color: Colors.white,
+//                                       fontSize: 15,
+//                                       fontWeight: FontWeight.w600,
+//                                     ),
+//                                   ),
+//                                 ),
+
+//                                 const SizedBox(height: 20),
+
+//                                 // SUBMIT ATTENDANCE BUTTON
+//                                 ElevatedButton(
+//                                   onPressed: _navigateToAttendancePage,
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: Colors.green,
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     padding: const EdgeInsets.symmetric(
+//                                       horizontal: 18,
+//                                       vertical: 6,
+//                                     ),
+//                                     minimumSize: const Size(170, 25),
+//                                   ),
+//                                   child: const Text(
+//                                     'Submit Attendance',
+//                                     style: TextStyle(
+//                                       color: Colors.white,
+//                                       fontSize: 15,
+//                                       fontWeight: FontWeight.w600,
+//                                     ),
+//                                   ),
+//                                 ),
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+
+//                         const SizedBox(height: 50),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+
+//                 // LOGO - Circular container for Medibiz
+//                 Positioned(
+//                   top: (constraints.maxHeight * 0.40) / 2 - 90,
+//                   left: 0,
+//                   right: 0,
+//                   child: Center(
+//                     child: Container(
+//                       width: 130,
+//                       height: 130,
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         shape: BoxShape.circle,
+//                         boxShadow: const [
+//                           BoxShadow(
+//                             color: Colors.black26,
+//                             blurRadius: 8,
+//                             spreadRadius: 2,
+//                           ),
+//                         ],
+//                       ),
+//                       child: ClipOval(
 //                         child: Image.asset(
-//                           'assets/xelwel logo1.png',
-//                           width: 105,
-//                           height: 105,
+//                           'assets/medibiz logo.jpg',
+//                           width: 130,
+//                           height: 130,
 //                           fit: BoxFit.cover,
 //                         ),
 //                       ),
