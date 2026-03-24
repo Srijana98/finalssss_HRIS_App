@@ -124,7 +124,7 @@ Future<void> _loadData() async {
 }
 
 
-  //FETCH DROPDOWN DATA FUNCTION
+  // FETCH DROPDOWN DATA FUNCTION
   Future<void> _fetchDropdownData() async {
     try {
       final prefs = await SharedPreferences.getInstance();

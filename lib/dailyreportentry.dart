@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 
 
+
 class DailyReportEntryPage extends StatefulWidget {
   const DailyReportEntryPage({super.key});
 
@@ -12,17 +13,36 @@ class DailyReportEntryPage extends StatefulWidget {
 }
 
 class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
-  final TextEditingController _reportingDateController = TextEditingController();
-  final TextEditingController _reportingTitleController = TextEditingController();
-  final TextEditingController _workstationController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
+final TextEditingController _reportingDateController = TextEditingController();
+final TextEditingController _reportingTitleController = TextEditingController();
+final TextEditingController _workstationController = TextEditingController();
+final TextEditingController _descriptionController = TextEditingController();
+final TextEditingController _fuelLitreController = TextEditingController();
+final TextEditingController _fuelPriceController = TextEditingController();
+final TextEditingController _totalAmountController = TextEditingController();
+final TextEditingController _vehicleNoController = TextEditingController();
+final TextEditingController _odometerStartController = TextEditingController();
+final TextEditingController _odometerEndController = TextEditingController();
 
   final List<String> _clients = ['Client A', 'Client B', 'Client C'];
+  
+  
   String? _selectedClient;
   File? _selectedFile;
+  
+
+
+  final List<String> _paymentOptions = ['Self', 'Company'];
+  String? _selectedPayment;
+  
+ final List<String> _vehicleTypes = ['Bike', 'Car', 'Van', 'Truck'];
+ String? _selectedVehicleType;
+ 
 
   bool _isBS = true; 
-
+  bool _isFuelClaim = false;
+ 
+  
 
   final Color _customBlue = const Color(0xFF346CB0);
 
@@ -32,6 +52,12 @@ class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
     _reportingTitleController.dispose();
     _workstationController.dispose();
     _descriptionController.dispose();
+    _fuelLitreController.dispose();
+   _fuelPriceController.dispose();
+   _totalAmountController.dispose();
+   _vehicleNoController.dispose();
+   _odometerStartController.dispose();
+   _odometerEndController.dispose();
     super.dispose();
   }
 
@@ -244,6 +270,7 @@ class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
         ),
       ),
       body: SingleChildScrollView(
+        
         padding: const EdgeInsets.all(18),
         child: Column(
           children: [
@@ -252,6 +279,73 @@ class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
             _buildRow('Title:', _buildTextField(_reportingTitleController)),
             _buildRow('Date:', _buildDateField(_reportingDateController)),
             _buildRow('Description:', _buildTextField(_descriptionController, maxLines: 4)),
+           
+
+            Padding(
+  padding: const EdgeInsets.symmetric(vertical: 6),
+  child: Row(
+    children: [
+      Checkbox(
+        value: _isFuelClaim,
+        activeColor: _customBlue,
+        onChanged: (val) => setState(() => _isFuelClaim = val ?? false),
+      ),
+      const Text('Fuel Claim', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+    ],
+  ),
+),
+
+if (_isFuelClaim) ...[
+  _buildRow('Fuel Litre:', _buildTextField(_fuelLitreController)),
+  _buildRow('Fuel Price:', _buildTextField(_fuelPriceController)),
+  _buildRow(
+  'Total Amount:',
+  _buildTextField(_totalAmountController),
+),
+  _buildRow(
+    'Payment:',
+    DropdownButtonFormField<String>(
+      value: null,
+      icon: Icon(Icons.arrow_drop_down, color: _customBlue),
+      dropdownColor: Colors.white,
+      style: const TextStyle(fontSize: 13, color: Colors.black),
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        border: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC))),
+        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC))),
+        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 2)),
+      ),
+      items: _paymentOptions
+          .map((o) => DropdownMenuItem(value: o, child: Text(o, style: const TextStyle(fontSize: 13))))
+          .toList(),
+      onChanged: (val) => setState(() => _selectedPayment = val),
+    ),
+  ),
+  _buildRow(
+    'Vehicle Type:',
+    DropdownButtonFormField<String>(
+      value: null,
+      icon: Icon(Icons.arrow_drop_down, color: _customBlue),
+      dropdownColor: Colors.white,
+      style: const TextStyle(fontSize: 13, color: Colors.black),
+      decoration: const InputDecoration(
+        isDense: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 12, horizontal: 10),
+        border: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC))),
+        enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC))),
+        focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Color(0xFFCCCCCC), width: 2)),
+      ),
+      items: _vehicleTypes
+          .map((o) => DropdownMenuItem(value: o, child: Text(o, style: const TextStyle(fontSize: 13))))
+          .toList(),
+      onChanged: (val) => setState(() => _selectedVehicleType = val),
+    ),
+  ),
+  _buildRow('Vehicle No:', _buildTextField(_vehicleNoController)),
+  _buildRow('Odometer Start:', _buildTextField(_odometerStartController)),
+  _buildRow('Odometer End Value:', _buildTextField(_odometerEndController)),
+],
             _buildRow('Attachment:', _buildAttachmentField()),
             const SizedBox(height: 24),
             Center(

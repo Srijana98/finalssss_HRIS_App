@@ -25,7 +25,7 @@ class AttendanceHistoryModel {
     required this.attendanceType,
     required this.attendanceTime,
     required this.remarks,
-    required this.requestDate, 
+    required this.requestDate,
   });
 
   factory AttendanceHistoryModel.fromJson(Map<String, dynamic> json) {
@@ -66,12 +66,12 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
   DateTime? _toDate;
 
   bool isLoading = false;
-String? error;
+  String? error;
 
 Map<String, List<AttendanceHistoryModel>> historyData = {
   'Pending': [],
   'Approved': [],
-  'Cancel': [],
+   'Cancel': [],
 };
 
 
@@ -146,7 +146,7 @@ Future<void> fetchAttendanceHistory() async {
       Map<String, List<AttendanceHistoryModel>> parsed = {
         'Pending': [],
         'Approved': [],
-        'Cancel': [],
+         'Cancel':[],
       };
 
       if (statusWiseHistory is Map) {
@@ -541,7 +541,8 @@ Widget _buildList(String tab) {
                                     ),
                                     child: Row(
                                       children: [
-                                        const Icon(Icons.calendar_today,
+                                       // const Icon(Icons.calendar_today,
+                                         const Icon(Icons.date_range,             
                                             color: Color(0xFF346CB0)),
                                         const SizedBox(width: 8),
                                         Text(

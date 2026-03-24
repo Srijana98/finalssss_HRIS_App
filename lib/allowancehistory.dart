@@ -18,7 +18,6 @@ class AllowanceRequest {
   final String statusRemarks;
   final String summarizedAmount;
   final String requestDate;
-  
 
   AllowanceRequest({
     required this.refno,
@@ -71,9 +70,9 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
   String? _error;
 
   Map<String, List<AllowanceRequest>> historyData = {
-    'Pending': [],
-    'Approved': [],
-    'Cancel': [],
+     'Pending': [],
+     'Approved': [],
+     'Cancel': [],
   };
 
   @override
@@ -132,6 +131,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
       return;
     }
 
+  
     final url = Uri.parse('$baseUrl/api/v1/allowance_get');
 
     try {
@@ -192,7 +192,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
           'Content-Type': 'application/json',
           'empid': empId,
            'orgid': orgId,
-          'locationid': locationId,
+            'locationid' :locationId,
         },
         body: jsonEncode({'id': id}),
       );
