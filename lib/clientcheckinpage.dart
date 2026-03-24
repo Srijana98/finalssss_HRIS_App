@@ -442,7 +442,7 @@ class _ClientCheckInPageState extends State<ClientCheckInPage> {
                 ),
                 const SizedBox(height: 20),
 
-                // --- Check In/Out button (Smaller size) ---
+            
                 Center(
                   child: SizedBox(
                     width: 130,
@@ -464,7 +464,7 @@ class _ClientCheckInPageState extends State<ClientCheckInPage> {
                 ),
                 const SizedBox(height: 12),
 
-                // --- History Button (Blue background) ---
+               
                 Center(
                   child: SizedBox(
                     width: 130,

@@ -60,13 +60,11 @@ class _ChangePasswordDialogState extends State<ChangePasswordDialog> {
       final data = jsonDecode(response.body);
 
       if (response.statusCode == 200 && data['status'] == 'success') {
-        // Password changed successfully
         if (mounted) {
           Navigator.pop(context);
           _showMessage(data['message'] ?? "Password updated successfully!");
         }
       } else {
-        // Handle error response
         _showMessage(data['message'] ?? "Failed to update password", isError: true);
       }
     } catch (e) {

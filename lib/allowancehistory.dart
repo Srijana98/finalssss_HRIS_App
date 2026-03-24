@@ -1,5 +1,4 @@
 
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'allowanceentry.dart';
@@ -192,7 +191,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
         headers: {
           'Content-Type': 'application/json',
           'empid': empId,
-          'orgid': orgId,
+           'orgid': orgId,
           'locationid': locationId,
         },
         body: jsonEncode({'id': id}),

@@ -755,7 +755,7 @@ class CurvedPainter extends CustomPainter {
 
 //                         const Center(
 //                           child: Text(
-//                             'Medibiz HRMS',
+//                             'Xelwel HRMS',
 //                             style: TextStyle(
 //                               fontSize: 20,
 //                               fontWeight: FontWeight.bold,
@@ -886,6 +886,252 @@ class CurvedPainter extends CustomPainter {
 //     );
 //   }
 // }
+
+// class CurvedPainter extends CustomPainter {
+//   @override
+//   void paint(Canvas canvas, Size size) {
+//     Paint paint = Paint()
+//       ..color = const Color(0xFF346CB0)
+//       ..style = PaintingStyle.fill;
+
+//     Path path = Path();
+//     path.lineTo(0, size.height - 50);
+//     path.quadraticBezierTo(
+//       size.width * 0.5,
+//       size.height + 20,
+//       size.width,
+//       size.height - 50,
+//     );
+//     path.lineTo(size.width, 0);
+//     path.close();
+
+//     canvas.drawPath(path, paint);
+//   }
+
+//   @override
+//   bool shouldRepaint(CustomPainter oldDelegate) => false;
+// }
+
+
+
+
+
+
+// login page for the shrinagar
+
+// import 'package:flutter/material.dart';
+// import 'package:url_launcher/url_launcher.dart';
+// import 'submitattendancepage.dart';
+
+// void main() {
+//   runApp(const MaterialApp(
+//     debugShowCheckedModeBanner: false,
+//     home: LoginScreen(),
+//   ));
+// }
+
+// class LoginScreen extends StatefulWidget {
+//   const LoginScreen({super.key});
+
+//   @override
+//   State<LoginScreen> createState() => _LoginScreenState();
+// }
+
+// class _LoginScreenState extends State<LoginScreen> {
+//   Future<void> _login() async {
+//     final Uri url = Uri.parse('https://shreenagargroup.smarthajiri.com');
+
+//     try {
+//       await launchUrl(
+//         url,
+//         mode: LaunchMode.externalApplication,
+//       );
+//     } catch (e) {
+//       _showMessage('Could not open browser: ${e.toString()}', isError: true);
+//     }
+//   }
+
+//   void _showMessage(String message, {bool isError = false}) {
+//     ScaffoldMessenger.of(context).showSnackBar(
+//       SnackBar(
+//         content: Text(message),
+//         backgroundColor: isError ? Colors.red : const Color(0xFF5BAD3E),
+//         duration: const Duration(seconds: 2),
+//       ),
+//     );
+//   }
+
+//   void _navigateToAttendancePage() {
+//     Navigator.push(
+//       context,
+//       MaterialPageRoute(
+//           builder: (context) => const SubmitAttendancePage()),
+//     );
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.white,
+//       body: SafeArea(
+//         child: LayoutBuilder(
+//           builder: (context, constraints) {
+//             return Stack(
+//               children: [
+//                 // Curved blue header background
+//                 CustomPaint(
+//                   size: Size(
+//                     constraints.maxWidth,
+//                     constraints.maxHeight * 0.30,
+//                   ),
+//                   painter: CurvedPainter(),
+//                 ),
+
+//                 SingleChildScrollView(
+//                   child: Padding(
+//                     padding: const EdgeInsets.symmetric(horizontal: 32),
+//                     child: Column(
+//                       children: [
+//                         SizedBox(height: constraints.maxHeight * 0.32),
+
+//                         // App title
+//                         const Center(
+//                           child: Text(
+//                             'Xelwel HRMS',
+//                             style: TextStyle(
+//                               fontSize: 20,
+//                               fontWeight: FontWeight.bold,
+//                               color: Color(0xFF1B4FA8),
+//                             ),
+//                           ),
+//                         ),
+
+                       
+//                          const SizedBox(height: 100),
+
+//                         // Card with buttons
+//                         Align(
+//                           alignment: Alignment.center,
+//                           child: Container(
+//                             width: double.infinity,
+//                             padding: const EdgeInsets.all(20),
+//                             decoration: BoxDecoration(
+//                               color: Colors.grey.shade50,
+//                               borderRadius: BorderRadius.circular(20),
+//                               boxShadow: const [
+//                                 BoxShadow(
+//                                   color: Colors.black12,
+//                                   blurRadius: 10,
+//                                   spreadRadius: 2,
+//                                 ),
+//                               ],
+//                             ),
+//                             child: Column(
+//                               crossAxisAlignment: CrossAxisAlignment.center,
+//                               children: [
+//                                 const SizedBox(height: 20),
+
+//                                 // LOG IN BUTTON
+//                                 ElevatedButton(
+//                                   onPressed: _login,
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: const Color(0xFF1B4FA8),
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     padding: const EdgeInsets.symmetric(
+//                                       horizontal: 15,
+//                                       vertical: 8,
+//                                     ),
+//                                     minimumSize: const Size(130, 25),
+//                                   ),
+//                                   child: const Text(
+//                                     'Log In',
+//                                     style: TextStyle(
+//                                       color: Colors.white,
+//                                       fontSize: 15,
+//                                       fontWeight: FontWeight.w600,
+//                                     ),
+//                                   ),
+//                                 ),
+
+//                                 const SizedBox(height: 20),
+
+//                                 // SUBMIT ATTENDANCE BUTTON
+//                                 ElevatedButton(
+//                                   onPressed: _navigateToAttendancePage,
+//                                   style: ElevatedButton.styleFrom(
+//                                     backgroundColor: const Color(0xFF5BAD3E),
+//                                     shape: RoundedRectangleBorder(
+//                                       borderRadius: BorderRadius.circular(10),
+//                                     ),
+//                                     padding: const EdgeInsets.symmetric(
+//                                       horizontal: 18,
+//                                       vertical: 6,
+//                                     ),
+//                                     minimumSize: const Size(170, 25),
+//                                   ),
+//                                   child: const Text(
+//                                     'Submit Attendance',
+//                                     style: TextStyle(
+//                                       color: Colors.white,
+//                                       fontSize: 15,
+//                                       fontWeight: FontWeight.w600,
+//                                     ),
+//                                   ),
+//                                 ),
+
+//                                 const SizedBox(height: 20),
+//                               ],
+//                             ),
+//                           ),
+//                         ),
+
+//                         const SizedBox(height: 50),
+//                       ],
+//                     ),
+//                   ),
+//                 ),
+
+//                 // LOGO - Rounded rectangle to fit the wide Shreenagar logo
+//                 Positioned(
+//                   top: (constraints.maxHeight * 0.40) / 2 - 60,
+//                   left: 0,
+//                   right: 0,
+//                   child: Center(
+//                     child: Container(
+//                       width: 180,
+//                       height: 90,
+//                       decoration: BoxDecoration(
+//                         color: Colors.white,
+//                         borderRadius: BorderRadius.circular(16),
+//                         boxShadow: const [
+//                           BoxShadow(
+//                             color: Colors.black26,
+//                             blurRadius: 8,
+//                             spreadRadius: 2,
+//                           ),
+//                         ],
+//                       ),
+//                       child: Padding(
+//                         padding: const EdgeInsets.all(12.0),
+//                         child: Image.asset(
+//                           'assets/shreenagar.png',
+//                           fit: BoxFit.contain,
+//                         ),
+//                       ),
+//                     ),
+//                   ),
+//                 ),
+//               ],
+//             );
+//           },
+//         ),
+//       ),
+//     );
+//   }
+// }
+
 
 // class CurvedPainter extends CustomPainter {
 //   @override

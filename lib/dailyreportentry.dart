@@ -21,7 +21,7 @@ class _DailyReportEntryPageState extends State<DailyReportEntryPage> {
   String? _selectedClient;
   File? _selectedFile;
 
-  bool _isBS = true; // Default to BS date format
+  bool _isBS = true; 
 
 
   final Color _customBlue = const Color(0xFF346CB0);

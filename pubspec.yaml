@@ -48,6 +48,7 @@ flutter:
     - assets/xelwel logo1.png
     - assets/gwt logo.jpg
     - assets/medibiz logo.jpg
+    - assets/shreenagar.png
 
 flutter_icons:
   android: true

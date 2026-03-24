@@ -36,8 +36,6 @@ class _AllowanceEntryPageState extends State<AllowanceEntryPage> {
     _fetchAllowanceDefaults();
   }
 
-
-
   Future<void> _fetchAllowanceDefaults() async {
   try {
     final prefs = await SharedPreferences.getInstance();
