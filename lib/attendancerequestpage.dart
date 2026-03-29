@@ -8,7 +8,6 @@ import 'config.dart';
 import 'dart:convert';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 
-
 class AttendanceHistoryModel {
   final String id;
   final String attendanceDateAd;
@@ -17,6 +16,7 @@ class AttendanceHistoryModel {
   final String attendanceTime;
   final String remarks;
   final String requestDate;
+  
 
   AttendanceHistoryModel({
     required this.id,

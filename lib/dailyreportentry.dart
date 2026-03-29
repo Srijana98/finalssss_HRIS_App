@@ -3,11 +3,9 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 
-
-
 class DailyReportEntryPage extends StatefulWidget {
-  const DailyReportEntryPage({super.key});
-
+ const DailyReportEntryPage({super.key});
+    
   @override
   State<DailyReportEntryPage> createState() => _DailyReportEntryPageState();
 }
@@ -29,6 +27,7 @@ final TextEditingController _odometerEndController = TextEditingController();
   
   String? _selectedClient;
   File? _selectedFile;
+  
   
 
 
@@ -270,7 +269,6 @@ final TextEditingController _odometerEndController = TextEditingController();
         ),
       ),
       body: SingleChildScrollView(
-        
         padding: const EdgeInsets.all(18),
         child: Column(
           children: [
@@ -290,7 +288,8 @@ final TextEditingController _odometerEndController = TextEditingController();
         activeColor: _customBlue,
         onChanged: (val) => setState(() => _isFuelClaim = val ?? false),
       ),
-      const Text('Fuel Claim', style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+     const Text ('Fuel Claim', style: TextStyle(fontWeight: FontWeight.w600, fontSize:13)),
+      
     ],
   ),
 ),

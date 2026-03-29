@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'leaveentry.dart';
 import 'dashboardpage.dart';
 import 'config.dart';
-
+ 
 class LeaveApplicationModel {
   final String id;
   final List<Map<String, dynamic>> leaveCategories;
@@ -19,8 +19,7 @@ class LeaveApplicationModel {
   final String? dateType;
   final String reason;
   final String? substituteEmployeeId;
-  final String? halfleaveType;
-
+  final String? halfleaveType; 
   LeaveApplicationModel({
     required this.id,
     required this.leaveCategories,

@@ -18,6 +18,7 @@ class _SettingsPageState extends State<SettingsPage> {
     passwordController.dispose();
     passwordFocusNode.dispose();
     super.dispose();
+    
   }
 
   @override

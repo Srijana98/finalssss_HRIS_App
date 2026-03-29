@@ -3,21 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:nepali_date_picker/nepali_date_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:http/http.dart' as http;
-import 'config.dart'; 
+import 'package:http/http.dart' as http; 
 import 'lateinhistory.dart';
+import 'config.dart';
 
 
 class LateEarlyRequestApp extends StatelessWidget {
-  final Map<String, dynamic>? existingData; 
-
-  const LateEarlyRequestApp({super.key, this.existingData}); 
+  final Map<String, dynamic>? existingData;
+ const LateEarlyRequestApp({super.key, this.existingData});
 
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Late In / Early Out Request',
+      title: 'Late In / Early Out request',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         scaffoldBackgroundColor: Colors.white,
@@ -108,7 +107,7 @@ void initState() {
         'employee_id': empId,
         'org_id': orgId,
         'location_id': locationId,
-       'date_type': _isBS ? 'NP' : 'EN', 
+        'date_type': _isBS ? 'NP' : 'EN', 
       };
     });
     print('🗓 Date Type: ${_isBS ? 'NP' : 'EN'}');
@@ -144,6 +143,7 @@ void initState() {
         initialDate: DateTime.now(),
         firstDate: DateTime(2023),
         lastDate: DateTime(2101),
+       
       );
       if (picked != null) {
         setState(() {
@@ -306,9 +306,11 @@ void initState() {
     final orgId = prefs.getString('org_id') ?? '';
     final locationId = prefs.getString('location_id') ?? '';
     final token = prefs.getString('token') ?? '';
+    
 
     String postingType = _selectedPostingType == 'Late In' ? 'LI' : 'EO';
     String type = _selectedType == 'Personal Work' ? 'PERSONAL_WORK' : 'OFFICIAL_WORK';
+    
     
 
   final Map<String, dynamic> bodyMap = {

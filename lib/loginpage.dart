@@ -5,6 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dashboardpage.dart';
 import 'submitattendancepage.dart';
 import 'config.dart';
+import 'forgotpassword.dart';
 
 void main() {
   runApp(const MaterialApp(
@@ -171,9 +172,14 @@ Future<void> _login() async {
     );
   }
 
+
+
   void _forgotPassword() {
-    _showMessage("Forgot password clicked.");
-  }
+  Navigator.push(
+    context,
+    MaterialPageRoute(builder: (context) => const ForgotPasswordScreen()),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -609,8 +615,8 @@ class CurvedPainter extends CustomPainter {
 //                   child: Center(
                     
 //                     child: Container(
-//   width: 130,
-//   height: 130,
+//   width: 120,
+//   height: 120,
 //   decoration: BoxDecoration(
 //     color: Colors.white,
 //     borderRadius: BorderRadius.circular(16), 

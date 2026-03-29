@@ -13,7 +13,7 @@ class AdvanceSalaryEntryPage extends StatefulWidget {
   final AdvanceSalaryRequest? existingData;
 
   const AdvanceSalaryEntryPage({super.key, this.existingData});
-
+  
   @override
   State<AdvanceSalaryEntryPage> createState() => _AdvanceSalaryEntryPageState();
 }

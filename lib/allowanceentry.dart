@@ -3,13 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'config.dart';
 import 'allowancehistory.dart';
+import 'config.dart';
+
 
 
 class AllowanceEntryPage extends StatefulWidget {
-  const AllowanceEntryPage({super.key});
-
+ const AllowanceEntryPage({super.key});
+  
   @override
   State<AllowanceEntryPage> createState() => _AllowanceEntryPageState();
 }
@@ -17,10 +18,13 @@ class AllowanceEntryPage extends StatefulWidget {
 class _AllowanceEntryPageState extends State<AllowanceEntryPage> {
   final TextEditingController _allowanceAmountController = TextEditingController();
   final TextEditingController _remarksController = TextEditingController();
+ 
+ 
 
   String? _allowanceType;
   String? _effectiveYear;
   String? _effectiveMonth;
+  
 
   List<Map<String, dynamic>> _allowanceTypes = [];
   List<Map<String, dynamic>> _years = [];
@@ -101,7 +105,7 @@ Future<void> _submitAllowanceRequest() async {
     final empId = prefs.getString('employee_id') ?? '';
     final orgId = prefs.getString('org_id') ?? '';
     final locationId = prefs.getString('location_id') ?? '';
-
+    
     final selectedAllowance = _allowanceTypes.firstWhere(
       (e) => e['inde_name'].toString() == _allowanceType,
       orElse: () => {},

@@ -1,11 +1,12 @@
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'allowanceentry.dart';
-import "config.dart";
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'allowanceentry.dart';
+import 'config.dart';
+
 
 class AllowanceRequest {
   final String refno;
@@ -18,7 +19,7 @@ class AllowanceRequest {
   final String statusRemarks;
   final String summarizedAmount;
   final String requestDate;
-
+ 
   AllowanceRequest({
     required this.refno,
     required this.indeType,
@@ -30,7 +31,6 @@ class AllowanceRequest {
     required this.statusRemarks,
     required this.summarizedAmount,
     required this.requestDate,
-   
   });
 
   factory AllowanceRequest.fromJson(Map<String, dynamic> json) {
@@ -45,8 +45,8 @@ class AllowanceRequest {
       statusRemarks: json['status_remarks']?.toString() ?? '',
       summarizedAmount: json['summarized_amount']?.toString() ?? '',
       requestDate: json['request_date']?.toString() ?? '-',
-    
-    );
+     
+ );
   }
 }
 
@@ -62,19 +62,20 @@ class AllowanceHistoryPage extends StatefulWidget {
 
 class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
   final List<String> tabs = ['Pending', 'Approved', 'Cancel'];
-
+  
   DateTime? _fromDate;
   DateTime? _toDate;
 
   bool _isLoading = false;
   String? _error;
+  
 
   Map<String, List<AllowanceRequest>> historyData = {
      'Pending': [],
      'Approved': [],
-     'Cancel': [],
-  };
-
+     'Cancel' : [],
+     };
+ //final statusWiseHistory = data['data']?['statusWiseHistory'] ?? {};
   @override
   void initState() {
     super.initState();
@@ -87,12 +88,13 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
 
 
   void parseHistoryData(Map<String, dynamic> data) {
-    final statusWiseHistory = data['data']?['statusWiseHistory'] ?? {};
-
+   final statusWiseHistory = data['data']?['statusWiseHistory'] ?? {};
+  
     Map<String, List<AllowanceRequest>> parsedData = {
       'Pending': [],
       'Approved': [],
       'Cancel': [],
+      
     };
 
     if (statusWiseHistory is Map) {
@@ -109,6 +111,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
 
     setState(() {
       historyData = parsedData;
+     
     });
   }
 
@@ -118,10 +121,12 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
       _error = null;
     });
 
+    
     final prefs = await SharedPreferences.getInstance();
     final empId = prefs.getString('employee_id') ?? '';
     final orgId = prefs.getString('org_id') ?? '';
     final locationId = prefs.getString('location_id') ?? '';
+   
 
     if (empId.isEmpty || orgId.isEmpty || locationId.isEmpty) {
       setState(() {
@@ -185,19 +190,19 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
       final locationId = prefs.getString('location_id') ?? '';
 
       final url = Uri.parse('$baseUrl/api/v1/cancel_allowance');
-
+ 
       final response = await http.post(
         url,
         headers: {
           'Content-Type': 'application/json',
           'empid': empId,
            'orgid': orgId,
-            'locationid' :locationId,
+           'locationid' :locationId,
         },
         body: jsonEncode({'id': id}),
       );
 
-      final jsonData = jsonDecode(response.body);
+    final jsonData = jsonDecode(response.body);
 
       if (response.statusCode == 200 && jsonData['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -283,7 +288,7 @@ class _AllowanceHistoryPageState extends State<AllowanceHistoryPage> {
 
  
   Widget _buildList(String tab) {
-    List<AllowanceRequest> records = historyData[tab] ?? [];
+   List<AllowanceRequest> records = historyData[tab] ?? [];
 
     if (_isLoading) {
       return const Center(
@@ -317,6 +322,7 @@ return Card(
   child: Padding(
     padding: const EdgeInsets.all(12),
     child: Column(
+     
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _infoRow('Refno', request.refno),
@@ -326,8 +332,8 @@ return Card(
         _infoRow('Allowance Amount', request.summarizedAmount),
         _infoRow('Remarks',
             request.statusRemarks.isNotEmpty ? request.statusRemarks : '-'),
-        _infoRow('Request Date', request.requestDate),
-        if (tab == 'Pending')
+       _infoRow('Request Date', request.requestDate),
+       if (tab == 'Pending')
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [

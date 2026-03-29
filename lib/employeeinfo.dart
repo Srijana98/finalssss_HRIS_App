@@ -873,6 +873,7 @@ class Employee {
   final String retirementLeft;
   final String permanentAddress;
   final String temporaryAddress;
+ 
 
   const Employee({
     required this.name,
@@ -934,6 +935,7 @@ final sampleEmployee = const Employee(
 
 enum LayoutStyle { rowList, stripSection, timelineAccordion }
 
+
 const kCurrentLayout = LayoutStyle.rowList; 
 class EmployeeProfilePage extends StatelessWidget {
   const EmployeeProfilePage({super.key});
@@ -941,6 +943,7 @@ class EmployeeProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final emp = sampleEmployee;
+
     return Scaffold(
       backgroundColor: AppColors.surface,
       body: SingleChildScrollView(
